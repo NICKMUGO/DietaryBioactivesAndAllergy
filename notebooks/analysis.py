@@ -475,3 +475,45 @@ fig.suptitle("Sex check: expected two clean clusters (female: high XIST, no Y-ge
 savefig(fig, "qc_sex_check")
 sex_table = pd.DataFrame(sex_rows)
 sex_table
+
+# %% [markdown]
+# ### QC check: tissue identity markers
+
+# %%
+markers = ["KRT1", "KRT10", "LOR", "KRT13", "KRT4", "FOXJ1", "SCGB1A1", "MUC5AC", "BPIFA1", "PTPRC"]
+tissue_mat = pd.DataFrame({name: d["expr"].median(axis=1).rank(pct=True).reindex(markers) * 100
+                           for name, d in datasets.items()}).T
+fig, ax = plt.subplots(figsize=(8, 3.2))
+seq = matplotlib.colors.LinearSegmentedColormap.from_list("blueseq", ["#f0efec", "#86b6ef", "#2a78d6", "#104281"])
+sns.heatmap(tissue_mat, cmap=seq, vmin=0, vmax=100, annot=tissue_mat.round(0).fillna(-1).astype(int).astype(str)
+            .replace("-1", "filtered"), fmt="", annot_kws={"size": 7}, mask=tissue_mat.isna(),
+            cbar_kws={"label": "expression percentile within dataset"}, ax=ax, linewidths=1, linecolor="white")
+ax.set_facecolor("#f9f9f7")
+ax.set(title="Tissue-identity markers (blank = below expression filter, i.e. not expressed)", xlabel="", ylabel="")
+savefig(fig, "qc_tissue_markers")
+
+# %% [markdown]
+# **QC interpretation.**
+#
+# * **Suspicious finding:** four of the five microarray matrices are on a log2 scale (max ≈ 14–16), but
+#   **GSE36830 is not** (median ≈ 1, max ≈ 328: linear, median-scaled MAS5-type values). Analysing it as
+#   if it were log2 would have produced meaningless fold changes, so it was log2-transformed (values
+#   floored at their 0.1th percentile). GSE41861 contains missing values for some probes; those genes
+#   were dropped. RNA-seq data were normalised as described. The expression filter removes unexpressed
+#   probes/genes (before/after counts in the QC table).
+# * No technical duplicate samples were found; the outlier rule flags any sample with an unusually low
+#   correlation to the rest of its study (listed in the table – removed).
+# * **Sex check (two findings).** (i) In GSE19187 and GSE136825 samples split into two clean clusters
+#   (high *XIST*/no Y-gene signal vs the reverse), as biology requires. One GSE19187 sample recorded as
+#   female clearly expresses Y-chromosome genes (listed in the table) – a probable metadata error. We keep
+#   it because sex is not our variable of interest, but it is a warning that GEO annotations are not
+#   infallible. (ii) **In GSE41861 (both tissues) there is no sex signal at all**: *XIST* and
+#   *RPS4Y1/DDX3Y/KDM5D* have the same mean in reported males and females (gap ≈ 0 log2 units, versus
+#   ≈ 4 in GSE19187). That is biologically impossible for raw data, so the deposited values were almost
+#   certainly adjusted for sex (and possibly other covariates) before submission. The consequence is that
+#   sex cannot be checked there, and we must verify that the *disease* signal survives – which the
+#   positive-control genes in Stage 5 do (*POSTN*, *CLCA1*, *SERPINB2* are up in asthmatic bronchi).
+# * **Tissue markers** behave as biology requires: epidermal keratins (*KRT1/KRT10*, *LOR*) are high only in
+#   skin; squamous oesophageal keratins (*KRT13/KRT4*) dominate the oesophagus; airway epithelial and
+#   ciliated-cell genes (*SCGB1A1*, *BPIFA1*, *FOXJ1*, *MUC5AC*) are high in nasal and bronchial brushings;
+#   polyp/turbinate tissue shows immune infiltrate (*PTPRC*). The data are what they claim to be.
