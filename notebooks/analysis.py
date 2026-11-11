@@ -349,3 +349,76 @@ assert len(present) == len(BIOACTIVES), set(BIOACTIVES) - set(present)
 bio_targets = ctd[ctd.ChemicalName.isin(BIOACTIVES)].groupby("ChemicalName").GeneSymbol.nunique()
 print(f"{len(BIOACTIVES)} bioactives; human target genes per compound: "
       f"median {bio_targets.median():.0f}, range {bio_targets.min()}–{bio_targets.max()}")
+
+# %% [markdown]
+# ## Stage 3 – Pre-processing and quality control
+#
+# Steps, per dataset:
+#
+# 1. **Scale check** – microarray matrices must be log2 (max ≲ 16); RNA-seq is transformed by us.
+# 2. **RNA-seq normalisation** – GSE136825: keep genes with ≥ 1 count-per-million in at least as many
+#    samples as the smaller group, DESeq2-style median-of-ratios size factors, log2(CPM + 1).
+#    GSE58640: log2(FPKM + 1), keep genes with FPKM ≥ 1 in ≥ 6 samples.
+# 3. **Low-expression filter** for arrays – drop genes whose 75th-percentile intensity is in the
+#    bottom 20 % of the dataset (mostly unexpressed probes).
+# 4. **Duplicate and outlier samples** – Pearson correlation between samples; duplicates (r > 0.999)
+#    and outliers (median correlation below Q1 − 3·IQR) are flagged and removed.
+# 5. **Biology that must hold** – (a) reported sex must agree with *XIST* (female-only) and the
+#    Y-chromosome genes *RPS4Y1/DDX3Y*; (b) tissue identity markers must be high in the expected
+#    tissue (keratins *KRT1/KRT10* in skin, *KRT13/KRT4* in oesophagus, ciliary *FOXJ1* in airway);
+#    (c) known positive controls for type-2 allergic inflammation (e.g. *POSTN*, *CLCA1*,
+#    *SERPINB2*, *CCL26*, *CST1*) should go up in disease – checked in Stage 5.
+
+# %%
+def median_ratio_size_factors(counts):
+    lg = np.log(counts.replace(0, np.nan))
+    geo_mean = lg.mean(axis=1)
+    ok = geo_mean.notna() & np.isfinite(geo_mean)
+    return np.exp((lg[ok].sub(geo_mean[ok], axis=0)).median(axis=0))
+
+qc_log = []
+for name, d in datasets.items():
+    x = d["expr_raw"].copy()
+    n0 = x.shape[0]
+    step = {"dataset": name, "genes before": n0, "samples before": x.shape[1]}
+    if d["kind"] == "array":
+        step["max value"] = round(float(np.nanmax(x.values)), 1)
+        assert step["max value"] < 20, "array data not log2"
+        x = x.dropna()
+        step["transform"] = "already log2"
+        q75 = x.quantile(0.75, axis=1)
+        x = x[q75 > q75.quantile(0.20)]
+    elif d["kind"] == "rnaseq_counts":
+        libsize = x.sum(axis=0)
+        step["max value"] = int(x.values.max())
+        cpm = x / libsize * 1e6
+        min_n = int(min(d["label"].sum(), (d["label"] == 0).sum()))
+        x = x[(cpm >= 1).sum(axis=1) >= min_n]
+        sf = median_ratio_size_factors(x)
+        d["size_factors"] = sf
+        d["libsize"] = libsize
+        x = np.log2(x / (sf * libsize.median()) * 1e6 + 1)
+        step["transform"] = "median-of-ratios, log2(CPM+1)"
+    else:
+        step["max value"] = round(float(x.values.max()), 1)
+        x = x[(x >= 1).sum(axis=1) >= 6]
+        x = np.log2(x + 1)
+        step["transform"] = "log2(FPKM+1)"
+    corr = np.corrcoef(x.values.T)
+    np.fill_diagonal(corr, np.nan)
+    dup = [x.columns[j] for i, j in zip(*np.where(np.triu(corr, 1) > 0.999))]
+    medc = np.nanmedian(corr, axis=1)
+    q1, q3 = np.percentile(medc, [25, 75])
+    outl = list(x.columns[medc < q1 - 3 * (q3 - q1)])
+    drop = sorted(set(dup + outl))
+    x = x.drop(columns=drop)
+    d["expr"] = x
+    d["label"] = d["label"].drop(drop)
+    d["meta"] = d["meta"].drop(drop)
+    d["sample_median_corr"] = pd.Series(medc, index=d["expr_raw"].columns)
+    step.update({"genes after": x.shape[0], "samples after": x.shape[1],
+                 "duplicates": ", ".join(dup) or "–", "outliers removed": ", ".join(outl) or "–"})
+    qc_log.append(step)
+
+qc_table = pd.DataFrame(qc_log)
+qc_table
