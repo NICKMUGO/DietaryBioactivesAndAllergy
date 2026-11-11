@@ -292,8 +292,8 @@ summary
 
 # %% [markdown]
 # **Interpretation.** We have 7 allergic-vs-healthy contrasts from 6 GEO series (3 platforms:
-# two Affymetrix arrays and RNA-seq), 5 tissues and 5 allergic conditions; 371 samples in total
-# are used. Group sizes are unbalanced and small in two studies (CRSwNP array 6 vs 6; EoE 10 vs 6),
+# two Affymetrix arrays and RNA-seq), 5 tissues and 5 allergic conditions; 295 samples enter QC and 291 are analysed
+# (four outliers removed in Stage 3). Group sizes are unbalanced and small in two studies (CRSwNP array 6 vs 6; EoE 10 vs 6),
 # which limits power there and is the reason we combine studies rather than rely on any single one.
 
 # %% [markdown]
@@ -1559,7 +1559,7 @@ DASH["ml"] = {"within": ml.round(4).replace({np.nan: None}).to_dict(orient="reco
 #
 # | Objective | Result | Hypothesis |
 # |---|---|---|
-# | **O1 – signature** | 7 contrasts (5 tissues, 371 samples) → 1,177-gene consensus signature (860 up, 317 down), anchored by type-2 / mast-cell genes (*CPA3*, *CDH26*, *POSTN*, *CCL26*, *ALOX15*, *SERPINB4*), replicated in ≥ 2 studies each; a signature learned on 6 studies separates cases from controls in the 7th without any training. | – |
+# | **O1 – signature** | 7 contrasts (5 tissues, 291 samples) → 1,177-gene consensus signature (860 up, 317 down), anchored by type-2 / mast-cell genes (*CPA3*, *CDH26*, *POSTN*, *CCL26*, *ALOX15*, *SERPINB4*), replicated in ≥ 2 studies each; a signature learned on 6 studies separates cases from controls in the 7th without any training. | – |
 # | **O2 – enrichment & direction** | Naive test: 8/44 bioactives "enriched" (and 20 % of all CTD chemicals). Degree-matched: 1/44 (sulforaphane, 1.27×, FDR ≈ 0.03). Dietary vs other chemicals: no difference (p ≈ 0.75). Reversal: 47 % vs 50 % expected, 0/14 compounds significant. | H1 not supported (one exception); H2 not supported; H3 not supported |
 # | **O3 – interpretation** | Up: interleukin signalling, immunoregulatory interactions, granulocyte degranulation, mitotic cell cycle. Down: de novo ceramide/sphingolipid synthesis, sterol / nuclear-receptor metabolism (barrier link). Network hubs are generic stress/proliferation genes (*BAX*, *NFE2L2*, *MMP9*, *CCNB1*); compounds reverse proliferation genes but reinforce *NFE2L2* (likely a protective response). CTD curated allergy genes were *not* enriched (they are mostly susceptibility loci). | – |
 # | **O4 – prediction** | Bioactive hub targets classify disease well above the majority baseline (AUROC 0.82–1.00 within datasets; 0.84 across datasets), but no better than random gene sets of equal size (50th percentile within; 0.83, p ≈ 0.38 across). An untrained signature score from 6 studies reaches AUROC ≈ 0.80 on the 7th. | H4 partly supported |
