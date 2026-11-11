@@ -55,3 +55,72 @@
 #
 # Null hypotheses are the negations; we report every result whether or not it
 # supports the hypothesis.
+
+# %% [markdown]
+# ### Setup
+# In Colab this cell clones the repository and downloads the raw data (≈110 MB,
+# 2–4 minutes). Locally it uses the repository you are in.
+
+# %%
+import os, sys, subprocess
+from pathlib import Path
+
+REPO_URL = "https://github.com/NICKMUGO/DietaryBioactivesAndAllergy.git"
+IN_COLAB = "google.colab" in sys.modules
+
+if IN_COLAB:
+    if not Path("DietaryBioactivesAndAllergy").exists():
+        subprocess.run(["git", "clone", REPO_URL], check=True)
+    os.chdir("DietaryBioactivesAndAllergy")
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "networkx", "statsmodels"], check=True)
+
+ROOT = Path.cwd()
+if not (ROOT / "scripts" / "download_data.py").exists():
+    ROOT = ROOT.parent
+subprocess.run([sys.executable, str(ROOT / "scripts" / "download_data.py")], check=True)
+
+RAW = ROOT / "data" / "raw"
+PROC = ROOT / "data" / "processed"
+RES = ROOT / "results"
+FIG = RES / "figures"
+for d in (PROC, RES, FIG):
+    d.mkdir(parents=True, exist_ok=True)
+print("project root:", ROOT)
+
+# %%
+import gzip, io, json, re, zipfile, warnings
+from collections import Counter, defaultdict
+
+import numpy as np
+import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+import networkx as nx
+from scipy import stats, special
+from statsmodels.stats.multitest import multipletests
+from sklearn.decomposition import PCA
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+SEED = 42
+rng = np.random.default_rng(SEED)
+
+C_CTRL, C_DIS, C_AQUA, C_YEL, C_VIOLET = "#2a78d6", "#e34948", "#1baf7a", "#eda100", "#6250d6"
+C_ORANGE, C_MUTED, C_GRID, C_INK = "#eb6834", "#898781", "#e1e0d9", "#0b0b0b"
+DIVERGING = matplotlib.colors.LinearSegmentedColormap.from_list(
+    "bluegrayred", ["#104281", "#3987e5", "#f0efec", "#e66767", "#a32a2a"])
+plt.rcParams.update({
+    "figure.dpi": 110, "savefig.dpi": 150, "savefig.bbox": "tight",
+    "font.family": "sans-serif", "font.size": 9, "axes.titlesize": 10,
+    "axes.edgecolor": "#c3c2b7", "axes.linewidth": 0.8, "axes.grid": True,
+    "grid.color": C_GRID, "grid.linewidth": 0.6, "axes.axisbelow": True,
+    "axes.spines.top": False, "axes.spines.right": False,
+    "xtick.color": "#52514e", "ytick.color": "#52514e", "axes.labelcolor": "#52514e",
+    "legend.frameon": False,
+})
+
+def savefig(fig, name):
+    fig.savefig(FIG / f"{name}.png")
+    plt.show()
+
+DASH = {}
