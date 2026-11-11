@@ -688,3 +688,65 @@ for name, d in datasets.items():
                     "down": int((r.DEG == "down").sum()), "min FDR": f"{r.FDR.min():.1e}"})
 de_summary = pd.DataFrame(de_rows)
 de_summary
+
+# %% [markdown]
+# #### Positive controls – does the analysis recover known allergy biology?
+# Type-2 (IL-13-induced) epithelial genes are the best-established markers: *POSTN*, *CLCA1* and *SERPINB2*
+# (Woodruff et al. 2007), *CST1*, *CCL26* (eotaxin-3, the top EoE gene), *ALOX15*, *CPA3* (mast cells), *CLC*
+# (eosinophils). If they did not go up, something would be wrong with our labels or processing.
+
+# %%
+POS_CTRL = ["POSTN", "CLCA1", "SERPINB2", "CST1", "CCL26", "ALOX15", "CPA3", "CLC", "IL1RL1", "CCL17"]
+pc = pd.DataFrame({n: r.reindex(POS_CTRL)["log2FC"] for n, r in de.items()}).T
+pcf = pd.DataFrame({n: r.reindex(POS_CTRL)["FDR"] for n, r in de.items()}).T
+fig, ax = plt.subplots(figsize=(8.5, 3.4))
+stars = pcf.map(lambda v: "" if pd.isna(v) else ("***" if v < 0.001 else "**" if v < 0.01 else "*" if v < 0.05 else ""))
+annot_txt = pc.round(1).astype(str).where(pc.notna(), "") + "\n" + stars.where(pc.notna(), "")
+lim = np.nanmax(np.abs(pc.values))
+sns.heatmap(pc, cmap=DIVERGING, center=0, vmin=-lim, vmax=lim, annot=annot_txt, fmt="", annot_kws={"size": 6.5},
+            mask=pc.isna(), linewidths=1, linecolor="white", cbar_kws={"label": "log2 fold change (allergic − healthy)"}, ax=ax)
+ax.set_facecolor("#f9f9f7")
+ax.set(title="Positive-control type-2 genes (* FDR<0.05, ** <0.01, *** <0.001; blank = not expressed)", xlabel="", ylabel="")
+savefig(fig, "de_positive_controls")
+pos_up = int(((pc > 0) & (pcf < 0.05)).sum().sum()); pos_down = int(((pc < 0) & (pcf < 0.05)).sum().sum())
+print(f"significant positive-control results: {pos_up} up, {pos_down} down (of {int(pc.notna().sum().sum())} measured)")
+DASH["positive_controls"] = {"genes": POS_CTRL, "datasets": list(pc.index),
+                             "lfc": pc.round(2).where(pc.notna(), None).values.tolist(),
+                             "fdr": pcf.where(pcf.notna(), None).map(lambda v: None if v is None else float(f"{v:.2e}")).values.tolist()}
+
+# %%
+fig, axes = plt.subplots(2, 4, figsize=(14, 6.4))
+for ax, (name, r) in zip(axes.flat, de.items()):
+    nl = -np.log10(r.p.clip(lower=1e-300))
+    col = r.DEG.map({"up": C_DIS, "down": C_CTRL, "ns": "#d4d3cc"})
+    ax.scatter(r.log2FC, nl, s=3, c=col, linewidths=0, rasterized=True)
+    lab_genes = r[r.DEG != "ns"].sort_values("p").head(6).index.union([g for g in POS_CTRL[:3] if g in r.index and r.loc[g, "DEG"] == "up"])
+    for g in lab_genes:
+        ax.annotate(g, (r.loc[g, "log2FC"], nl[g]), fontsize=6, color=C_INK, xytext=(2, 2), textcoords="offset points")
+    ax.axvline(LFC_T, color=C_MUTED, lw=0.5, ls="--"); ax.axvline(-LFC_T, color=C_MUTED, lw=0.5, ls="--")
+    ax.set(title=f"{name}\n{(r.DEG=='up').sum()} up / {(r.DEG=='down').sum()} down", xlabel="log2 fold change", ylabel="−log10 p")
+axes.flat[-1].axis("off")
+fig.suptitle("Volcano plots (red = up in allergic, blue = down; FDR < 0.05 and |log2FC| ≥ 0.5)", y=1.01)
+fig.tight_layout()
+savefig(fig, "de_volcanoes")
+
+vol = {}
+for name, r in de.items():
+    sig = r[r.DEG != "ns"]; ns_ = r[r.DEG == "ns"]
+    ns_ = ns_.sample(min(1500, len(ns_)), random_state=SEED)
+    sub = pd.concat([sig.sort_values("p").head(1500), ns_])
+    vol[name] = {"g": sub.index.tolist(), "x": sub.log2FC.round(3).tolist(),
+                 "y": (-np.log10(sub.p.clip(lower=1e-300))).round(3).tolist(), "c": sub.DEG.tolist()}
+DASH["volcano"] = vol
+DASH["de_summary"] = de_summary.to_dict(orient="records")
+
+# %% [markdown]
+# **Interpretation.** The expected type-2 biology is recovered: 34 of 53 measured positive-control results are
+# significantly *up* and only 2 are down. *POSTN*, *CST1*, *SERPINB2*, *CLCA1*, *CPA3* and *CCL26* rise in airway, sinus
+# and oesophageal disease; in atopic-dermatitis skin the airway IL-13 epithelial genes do not move (they are airway
+# genes) but the skin type-2 chemokines *CCL26* and *CCL17* (TARC, a clinical AD biomarker) do. This validates the labels,
+# the probe mapping and the GSE36830 log-transformation, and shows the disease signal survived whatever adjustment
+# was applied to GSE41861. The number of DEGs differs by two
+# orders of magnitude between studies, mirroring the PCA: inflamed tissue (AD skin, polyps, EoE) gives
+# thousands of DEGs, while epithelial brushings in asthma give tens to hundreds. A DEG count alone is
+# therefore a poor basis for comparing studies, which motivates the meta-analysis below.
