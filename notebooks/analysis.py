@@ -292,8 +292,8 @@ summary
 
 # %% [markdown]
 # **Interpretation.** We have 7 allergic-vs-healthy contrasts from 6 GEO series (3 platforms:
-# two Affymetrix arrays and RNA-seq), 5 tissues and 5 allergic conditions; 295 samples enter QC and 291 are analysed
-# (four outliers removed in Stage 3). Group sizes are unbalanced and small in two studies (CRSwNP array 6 vs 6; EoE 10 vs 6),
+# two Affymetrix arrays and RNA-seq), 5 tissues and 5 allergic conditions; 371 samples in total
+# are used. Group sizes are unbalanced and small in two studies (CRSwNP array 6 vs 6; EoE 10 vs 6),
 # which limits power there and is the reason we combine studies rather than rely on any single one.
 
 # %% [markdown]
@@ -1333,3 +1333,214 @@ DASH["network"] = {
 # * **Quercetin** is widely promoted as an anti-allergic mast-cell stabiliser, mainly from cell and animal studies. In
 #   curated human gene data we find no enrichment and no reversal, a reminder that *in vitro* mechanistic claims do not
 #   translate automatically to the disease transcriptome.
+
+# %% [markdown]
+# ## Stage 7 – Machine learning (O4, H4)
+#
+# **Task:** classify each sample as allergic vs healthy from its expression profile.
+#
+# **Feature sets** (all defined *without* the labels of the data being predicted, to avoid leakage):
+#
+# | Feature set | Definition |
+# |---|---|
+# | **Bioactive hub targets** | genes targeted by ≥ 4 of the 44 dietary bioactives in CTD – pure prior knowledge, no expression data used |
+# | **Bioactive-targeted signature (LOO)** | consensus signature re-derived from the *other six* contrasts, restricted to genes targeted by ≥ 1 bioactive |
+# | **Random genes (baseline)** | 15 random gene sets of the same size as each set above, drawn from the same dataset |
+# | **All genes + in-fold selection** | all expressed genes; the 100 most significant (ANOVA F) are chosen *inside* each training fold |
+# | **Majority class (baseline)** | `DummyClassifier` – AUROC 0.5 by construction |
+#
+# **Model:** standardise → L2-regularised logistic regression (C = 0.1, class-balanced weights); a random forest (300 trees)
+# is also fitted on the hub-target set. **Evaluation:** repeated stratified k-fold CV (k = 5, or fewer when the minority
+# class is small; 5 repeats), AUROC and balanced accuracy. Significance against chance: label-permutation test (100
+# permutations). **Generalisation:** leave-one-dataset-out (LODO) – train on six contrasts, test on the seventh, with
+# genes z-scored within each dataset to remove platform effects.
+
+# %%
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.dummy import DummyClassifier
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold, cross_validate, permutation_test_score
+from sklearn.metrics import roc_auc_score
+
+n_bio_per_gene = pd.Series(Counter(U[i] for c in BIOACTIVES for i in chem_targets_U[c]))
+HUB = set(n_bio_per_gene.index[n_bio_per_gene >= 4])
+print(f"bioactive hub targets (≥4 compounds): {len(HUB)} genes")
+
+def lr():
+    return make_pipeline(StandardScaler(), LogisticRegression(C=0.1, class_weight="balanced", max_iter=5000))
+
+def cv_for(y, repeats=5):
+    k = int(min(5, np.bincount(y).min()))
+    return RepeatedStratifiedKFold(n_splits=k, n_repeats=repeats, random_state=SEED)
+
+def cv_auc(model, X, y, repeats=5):
+    r = cross_validate(model, X, y, cv=cv_for(y, repeats), scoring=["roc_auc", "balanced_accuracy"])
+    return r["test_roc_auc"].mean(), r["test_roc_auc"].std(), r["test_balanced_accuracy"].mean()
+
+N_RAND = 15
+RAND_LABEL = {"Bioactive hub targets": "Random genes (same size as hub set)",
+              "Bioactive-targeted signature (LOO)": "Random genes (same size as signature set)"}
+loo_sig = {}
+ml_rows, rand_dist = [], {}
+for name, d in datasets.items():
+    x = d["expr"]; y = d["label"].loc[x.columns].values
+    others = [n for n in DSN if n != name]
+    m_loo, _ = consensus(others)
+    sig_loo = m_loo[m_loo.signature]
+    loo_sig[name] = sig_loo
+    bio_any = set(n_bio_per_gene.index)
+    fsets = {"Bioactive hub targets": sorted(HUB & set(x.index)),
+             "Bioactive-targeted signature (LOO)": sorted(set(sig_loo.index) & bio_any & set(x.index))}
+    res = {}
+    for fs, genes in fsets.items():
+        auc, sd, bacc = cv_auc(lr(), x.loc[genes].T.values, y)
+        res[fs] = (auc, sd, bacc, len(genes))
+        pool = np.array(x.index)
+        aucs = [cv_auc(lr(), x.loc[rng.choice(pool, len(genes), replace=False)].T.values, y, repeats=2)[0] for _ in range(N_RAND)]
+        rand_dist[(name, fs)] = aucs
+        res[RAND_LABEL[fs]] = (np.mean(aucs), np.std(aucs), np.nan, len(genes))
+    Xh = x.loc[fsets["Bioactive hub targets"]].T.values
+    auc, sd, bacc = cv_auc(RandomForestClassifier(300, class_weight="balanced", random_state=SEED, n_jobs=-1), Xh, y, repeats=2)
+    res["Bioactive hub targets – random forest"] = (auc, sd, bacc, Xh.shape[1])
+    auc, sd, bacc = cv_auc(make_pipeline(StandardScaler(), SelectKBest(f_classif, k=100),
+                                         LogisticRegression(C=0.1, class_weight="balanced", max_iter=5000)), x.T.values, y)
+    res["All genes + in-fold top-100"] = (auc, sd, bacc, x.shape[0])
+    auc, sd, bacc = cv_auc(DummyClassifier(strategy="prior"), Xh, y)
+    res["Majority class"] = (auc, sd, bacc, 0)
+    _, _, p_perm = permutation_test_score(lr(), Xh, y, cv=StratifiedKFold(int(min(5, np.bincount(y).min())), shuffle=True,
+                                          random_state=SEED), scoring="roc_auc", n_permutations=100, random_state=SEED)
+    for fs, (auc, sd, bacc, ng) in res.items():
+        pct = (float((np.array(rand_dist[(name, fs)]) < auc).mean() * 100) if (name, fs) in rand_dist else np.nan)
+        ml_rows.append({"dataset": name, "features": fs, "n_genes": ng, "AUROC": auc, "AUROC_sd": sd, "balanced_acc": bacc,
+                        "perm_p": p_perm if fs == "Bioactive hub targets" else np.nan, "pct_beats_random": pct})
+    print(f"{name:28s} hub AUROC {res['Bioactive hub targets'][0]:.3f} | random {np.mean(rand_dist[(name, 'Bioactive hub targets')]):.3f} "
+          f"| sig-LOO {res['Bioactive-targeted signature (LOO)'][0]:.3f} | all-genes {res['All genes + in-fold top-100'][0]:.3f} | perm p {p_perm:.3f}")
+ml = pd.DataFrame(ml_rows)
+ml.to_csv(RES / "ml_within_dataset.csv", index=False)
+hub_rows = ml[ml.features == "Bioactive hub targets"].set_index("dataset")
+print(f"\nhub targets beat a random draw of equal size in {hub_rows.pct_beats_random.mean():.0f}% of comparisons on average"
+      " (50% = no better than random)")
+ml.pivot(index="dataset", columns="features", values="AUROC").reindex(DSN).round(3)
+
+# %%
+FS_ORDER = ["Majority class", "Bioactive hub targets", "Bioactive hub targets – random forest",
+            "Bioactive-targeted signature (LOO)", "All genes + in-fold top-100"]
+FS_COL = {"Majority class": C_MUTED, "Bioactive hub targets": C_AQUA, "Bioactive hub targets – random forest": C_VIOLET,
+          "Bioactive-targeted signature (LOO)": C_DIS, "All genes + in-fold top-100": C_CTRL}
+fig, ax = plt.subplots(figsize=(12, 4.6))
+xs = np.arange(len(DSN))
+for i, name in enumerate(DSN):
+    rd = rand_dist[(name, "Bioactive hub targets")]
+    ax.boxplot([rd], positions=[i - 0.27], widths=0.16, showfliers=False, patch_artist=True,
+               boxprops=dict(facecolor="#e1e0d9", edgecolor=C_MUTED, lw=0.6), medianprops=dict(color=C_INK, lw=0.8),
+               whiskerprops=dict(color=C_MUTED, lw=0.6), capprops=dict(lw=0))
+    rd2 = rand_dist[(name, "Bioactive-targeted signature (LOO)")]
+    ax.boxplot([rd2], positions=[i + 0.05], widths=0.16, showfliers=False, patch_artist=True,
+               boxprops=dict(facecolor="#e1e0d9", edgecolor=C_MUTED, lw=0.6), medianprops=dict(color=C_INK, lw=0.8),
+               whiskerprops=dict(color=C_MUTED, lw=0.6), capprops=dict(lw=0))
+for j, fs in enumerate(FS_ORDER):
+    sub = ml[ml.features == fs].set_index("dataset").reindex(DSN)
+    off = {"Majority class": -0.38, "Bioactive hub targets": -0.27, "Bioactive hub targets – random forest": -0.16,
+           "Bioactive-targeted signature (LOO)": 0.05, "All genes + in-fold top-100": 0.25}[fs]
+    ax.errorbar(xs + off, sub.AUROC, yerr=sub.AUROC_sd, fmt="o", ms=6, color=FS_COL[fs], ecolor=FS_COL[fs], elinewidth=0.8,
+                capsize=0, label=fs, markeredgecolor="white", zorder=4)
+ax.plot([], [], marker="s", ls="", color="#e1e0d9", markeredgecolor=C_MUTED, label="random gene sets of equal size (box)")
+ax.axhline(0.5, color=C_INK, lw=0.8, ls="--")
+ax.set_xticks(xs, DSN, rotation=15, fontsize=8); ax.grid(axis="x", visible=False); ax.set_ylim(0.2, 1.05)
+ax.set(ylabel="cross-validated AUROC (mean ± sd)", title="Within-dataset classification of allergic vs healthy samples")
+ax.legend(fontsize=7, ncol=3, loc="lower right")
+savefig(fig, "ml_within_dataset")
+
+# %% [markdown]
+# **Interpretation (within-dataset).**
+# Every feature set beats the majority baseline (AUROC 0.5) by a wide margin: ≈ 0.82–0.94 in the epithelial-brushing
+# studies and ≈ 0.98–1.00 in inflamed tissue (AD skin, polyps, EoE). The label-permutation test confirms this is not
+# chance (p ≤ 0.02 everywhere except the 12-sample CRSwNP array study, p ≈ 0.08, where the possible p-values are limited
+# by the sample size). The key comparison for H4 is with **random gene sets of the same size**: bioactive hub targets
+# beat a random draw in exactly **50 %** of comparisons on average, i.e. they are **no better than random genes**. When a
+# disease changes hundreds to thousands of genes, almost any thousand genes carry enough signal to separate the groups,
+# so "bioactive target genes predict allergy" says nothing specific about the compounds. The leave-one-out signature (derived
+# from *other* studies) is the best or joint-best feature set in 5/7 datasets, so the consensus signature generalises.
+# Childhood nasal epithelium (GSE19187) is the hardest dataset, consistent with its weak disease signal in the PCA.
+
+# %%
+common = sorted(set.intersection(*[set(d["expr"].index) for d in datasets.values()]))
+Z = {n: d["expr"].loc[common].sub(d["expr"].loc[common].mean(axis=1), axis=0)
+         .div(d["expr"].loc[common].std(axis=1).replace(0, 1), axis=0) for n, d in datasets.items()}
+Y = {n: d["label"].loc[d["expr"].columns].values for n, d in datasets.items()}
+hub_c = [g for g in common if g in HUB]
+print(f"genes measured in all 7 contrasts: {len(common)}; of which bioactive hub targets: {len(hub_c)}")
+
+def lodo_auc(genes):
+    out = {}
+    for test in DSN:
+        tr = [n for n in DSN if n != test]
+        Xtr = np.vstack([Z[n].loc[genes].T.values for n in tr]); ytr = np.concatenate([Y[n] for n in tr])
+        m = lr().fit(Xtr, ytr)
+        out[test] = roc_auc_score(Y[test], m.predict_proba(Z[test].loc[genes].T.values)[:, 1])
+    return out
+
+lodo_hub = lodo_auc(hub_c)
+lodo_rand = [lodo_auc(list(rng.choice(common, len(hub_c), replace=False))) for _ in range(N_RAND)]
+lodo_score, lodo_score_bio = {}, {}
+for test in DSN:
+    sl = loo_sig[test]
+    up = [g for g in sl.index[sl.dir > 0] if g in Z[test].index]
+    dn = [g for g in sl.index[sl.dir < 0] if g in Z[test].index]
+    sc = Z[test].loc[up].mean() - (Z[test].loc[dn].mean() if dn else 0)
+    lodo_score[test] = roc_auc_score(Y[test], sc)
+    upb, dnb = [g for g in up if g in n_bio_per_gene.index], [g for g in dn if g in n_bio_per_gene.index]
+    scb = Z[test].loc[upb].mean() - (Z[test].loc[dnb].mean() if dnb else 0)
+    lodo_score_bio[test] = roc_auc_score(Y[test], scb)
+lodo = pd.DataFrame({"LR on bioactive hub targets": lodo_hub,
+                     "LR on random genes (mean)": pd.DataFrame(lodo_rand).mean(),
+                     "LR on random genes (sd)": pd.DataFrame(lodo_rand).std(),
+                     "Signature score (LOO, no training)": lodo_score,
+                     "Bioactive-targeted signature score (LOO)": lodo_score_bio}).loc[DSN]
+lodo.loc["mean"] = lodo.mean()
+lodo.to_csv(RES / "ml_leave_one_dataset_out.csv")
+stab = pd.DataFrame({t: {"signature genes": len(sl), "Jaccard with full signature": len(set(sl.index) & set(SIG.index)) /
+                         len(set(sl.index) | set(SIG.index))} for t, sl in loo_sig.items()}).T
+print("stability of the consensus signature when each contrast is left out:")
+print(stab.round(2).to_string())
+rand_means = pd.DataFrame(lodo_rand).mean(axis=1)
+lodo_p = (1 + (rand_means >= lodo.loc["mean", "LR on bioactive hub targets"]).sum()) / (len(rand_means) + 1)
+print(f"mean LODO AUROC: hub targets {lodo.loc['mean', 'LR on bioactive hub targets']:.3f} vs random-gene draws "
+      f"{rand_means.mean():.3f} (range {rand_means.min():.3f}–{rand_means.max():.3f}); empirical p = {lodo_p:.2f}")
+lodo.round(3)
+
+# %%
+fig, ax = plt.subplots(figsize=(11, 4))
+cols = [("LR on bioactive hub targets", C_AQUA), ("LR on random genes (mean)", C_MUTED),
+        ("Signature score (LOO, no training)", C_DIS), ("Bioactive-targeted signature score (LOO)", C_ORANGE)]
+w = 0.2
+for j, (c, colr) in enumerate(cols):
+    vals = lodo.loc[DSN, c]
+    err = lodo.loc[DSN, "LR on random genes (sd)"] if "random" in c else None
+    ax.bar(np.arange(len(DSN)) + (j - 1.5) * w, vals, w * 0.92, color=colr, label=c, yerr=err,
+           error_kw=dict(elinewidth=0.8, ecolor=C_INK))
+ax.axhline(0.5, color=C_INK, lw=0.8, ls="--")
+ax.set_xticks(np.arange(len(DSN)), DSN, rotation=15, fontsize=8); ax.grid(axis="x", visible=False); ax.set_ylim(0, 1.05)
+ax.set(ylabel="AUROC on the held-out dataset", title="Leave-one-dataset-out: does a model or signature transfer to an unseen tissue/study?")
+ax.legend(fontsize=7, ncol=2, loc="lower right")
+savefig(fig, "ml_lodo")
+
+DASH["ml"] = {"within": ml.round(4).replace({np.nan: None}).to_dict(orient="records"),
+              "random": {f"{k[0]}||{k[1]}": [round(v, 4) for v in vals] for k, vals in rand_dist.items()},
+              "lodo": lodo.round(4).reset_index(names="dataset").to_dict(orient="records"),
+              "n_hub": len(HUB), "n_common": len(common), "n_hub_common": len(hub_c), "lodo_p": float(lodo_p),
+              "lodo_rand_means": rand_means.round(4).tolist(), "stability": stab.round(3).reset_index(names="left_out").to_dict(orient="records")}
+
+# %% [markdown]
+# **Interpretation (cross-dataset).** Transfer to an unseen study, tissue and platform is the harder and more honest test.
+# A logistic regression on the 642 bioactive hub targets, trained on six contrasts, reaches a mean held-out AUROC of
+# ≈ 0.84, but random gene sets of the same size reach ≈ 0.83 (empirical p ≈ 0.38). Again, the bioactive prior adds
+# nothing. The **signature score** (mean of up-genes minus down-genes from the other six studies; *nothing fitted*)
+# reaches ≈ 0.80 and is perfect or near-perfect for polyps and EoE. This is direct evidence that a **shared
+# cross-tissue allergy signature exists**, although it transfers less well to adult asthmatic nasal brushings
+# (≈ 0.63). Restricting the signature to bioactive-targeted genes changes nothing (≈ 0.81). **H4 is therefore only
+# partly supported:** bioactive targets classify disease far better than the majority baseline, but no better than
+# equally many random genes, within or across datasets.
