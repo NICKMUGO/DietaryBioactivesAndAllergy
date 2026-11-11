@@ -1591,3 +1591,29 @@ DASH["ml"] = {"within": ml.round(4).replace({np.nan: None}).to_dict(orient="reco
 #    the ceramide / sphingolipid barrier axis, which emerged here as a biologically coherent target.
 # 4. Use random-effects meta-analysis with subject-level pairing for GSE41861 and protein-interaction context (STRING)
 #    to prioritise signature hubs that are not merely well-studied.
+
+# %%
+DASH["datasets"] = summary.assign(**{"allergic": [int(datasets[k]["label"].sum()) for k in summary.dataset],
+                                     "healthy": [int((datasets[k]["label"] == 0).sum()) for k in summary.dataset]}).to_dict(orient="records")
+DASH["qc"] = qc_table.replace({np.nan: None}).to_dict(orient="records")
+DASH["sex"] = sex_table.replace({np.nan: None}).to_dict(orient="records")
+DASH["bioactives"] = [{"ctd": k, "name": v[0], "class": v[1], "n_targets_ctd": int(bio_targets[k])} for k, v in BIOACTIVES.items()]
+DASH["n_samples"] = int(sum(len(d["label"]) for d in datasets.values()))
+
+def _clean(o):
+    if isinstance(o, dict):
+        return {str(k): _clean(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [_clean(v) for v in o]
+    if isinstance(o, (np.integer,)):
+        return int(o)
+    if isinstance(o, (np.floating, float)):
+        return None if not np.isfinite(o) else float(o)
+    if isinstance(o, (np.bool_,)):
+        return bool(o)
+    return o
+
+with open(RES / "dashboard_data.json", "w") as fh:
+    json.dump(_clean(DASH), fh, separators=(",", ":"))
+print("saved", RES / "dashboard_data.json", f"({(RES / 'dashboard_data.json').stat().st_size / 1e6:.2f} MB)")
+print("figures:", ", ".join(sorted(p.stem for p in FIG.glob('*.png'))))
