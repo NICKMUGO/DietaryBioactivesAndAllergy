@@ -41,6 +41,8 @@ DOWNLOADS = [
     ("ctd", "CTD_chemicals.tsv.gz", "https://ctdbase.org/reports/CTD_chemicals.tsv.gz"),
     ("ctd", "CTD_curated_genes_diseases.tsv.gz",
      "https://ctdbase.org/reports/CTD_curated_genes_diseases.tsv.gz"),
+    ("hgnc", "hgnc_complete_set.txt",
+     "https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt"),
     ("reactome", "ReactomePathways.gmt.zip", "https://reactome.org/download/current/ReactomePathways.gmt.zip"),
     ("reactome", "ReactomePathwaysRelation.txt",
      "https://reactome.org/download/current/ReactomePathwaysRelation.txt"),
