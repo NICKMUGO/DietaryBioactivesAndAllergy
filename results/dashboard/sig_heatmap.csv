@@ -1,0 +1,256 @@
+gene,dataset,log2FC,rank
+CPA3,AR/asthma nasal (child),2.13,0
+CPA3,Asthma nasal,3.85,0
+CPA3,Asthma bronchial,2.51,0
+CPA3,CRSwNP polyp (array),2.64,0
+CPA3,Atopic dermatitis skin,-1.6,0
+CPA3,CRSwNP polyp (RNA-seq),1.85,0
+CPA3,Eosinophilic oesophagitis,5.25,0
+CDH26,AR/asthma nasal (child),1.39,1
+CDH26,Asthma nasal,0.88,1
+CDH26,Asthma bronchial,0.85,1
+CDH26,CRSwNP polyp (array),0.89,1
+CDH26,Atopic dermatitis skin,0.56,1
+CDH26,CRSwNP polyp (RNA-seq),2.26,1
+CDH26,Eosinophilic oesophagitis,5.8,1
+SAMSN1,AR/asthma nasal (child),0.51,2
+SAMSN1,Asthma nasal,1.56,2
+SAMSN1,Asthma bronchial,1.09,2
+SAMSN1,CRSwNP polyp (array),1.5,2
+SAMSN1,Atopic dermatitis skin,1.84,2
+SAMSN1,CRSwNP polyp (RNA-seq),1.32,2
+SAMSN1,Eosinophilic oesophagitis,2.69,2
+POSTN,AR/asthma nasal (child),3.43,3
+POSTN,Asthma nasal,1.9,3
+POSTN,Asthma bronchial,1.38,3
+POSTN,CRSwNP polyp (array),2.43,3
+POSTN,Atopic dermatitis skin,-0.13,3
+POSTN,CRSwNP polyp (RNA-seq),2.08,3
+POSTN,Eosinophilic oesophagitis,6.65,3
+SERPINB4,AR/asthma nasal (child),1.04,4
+SERPINB4,CRSwNP polyp (array),2.65,4
+SERPINB4,Atopic dermatitis skin,5.78,4
+SERPINB4,CRSwNP polyp (RNA-seq),2.97,4
+SERPINB4,Eosinophilic oesophagitis,3.58,4
+MS4A2,Asthma nasal,1.77,5
+MS4A2,Asthma bronchial,1.74,5
+MS4A2,CRSwNP polyp (array),1.99,5
+MS4A2,Atopic dermatitis skin,-2.05,5
+MS4A2,CRSwNP polyp (RNA-seq),1.39,5
+MS4A2,Eosinophilic oesophagitis,2.93,5
+CTSC,AR/asthma nasal (child),0.63,6
+CTSC,Asthma nasal,0.43,6
+CTSC,Asthma bronchial,0.22,6
+CTSC,CRSwNP polyp (array),1.9,6
+CTSC,Atopic dermatitis skin,0.69,6
+CTSC,CRSwNP polyp (RNA-seq),0.52,6
+CTSC,Eosinophilic oesophagitis,4.16,6
+BCL2L15,AR/asthma nasal (child),0.47,7
+BCL2L15,Asthma nasal,0.17,7
+BCL2L15,Asthma bronchial,0.35,7
+BCL2L15,CRSwNP polyp (array),1.14,7
+BCL2L15,Atopic dermatitis skin,0.0,7
+BCL2L15,CRSwNP polyp (RNA-seq),1.74,7
+BCL2L15,Eosinophilic oesophagitis,3.62,7
+CCL26,AR/asthma nasal (child),1.02,8
+CCL26,Asthma nasal,1.58,8
+CCL26,Asthma bronchial,0.6,8
+CCL26,CRSwNP polyp (array),2.88,8
+CCL26,Atopic dermatitis skin,3.48,8
+CCL26,Eosinophilic oesophagitis,7.91,8
+SFXN1,AR/asthma nasal (child),0.21,9
+SFXN1,Asthma nasal,0.16,9
+SFXN1,Asthma bronchial,0.2,9
+SFXN1,CRSwNP polyp (array),0.59,9
+SFXN1,Atopic dermatitis skin,0.7,9
+SFXN1,CRSwNP polyp (RNA-seq),0.41,9
+SFXN1,Eosinophilic oesophagitis,1.23,9
+NAV1,AR/asthma nasal (child),0.17,10
+NAV1,Asthma nasal,0.17,10
+NAV1,Asthma bronchial,0.47,10
+NAV1,CRSwNP polyp (array),-0.15,10
+NAV1,Atopic dermatitis skin,0.28,10
+NAV1,CRSwNP polyp (RNA-seq),0.93,10
+NAV1,Eosinophilic oesophagitis,1.61,10
+HDC,AR/asthma nasal (child),0.59,11
+HDC,Asthma nasal,0.59,11
+HDC,Asthma bronchial,0.56,11
+HDC,CRSwNP polyp (array),1.45,11
+HDC,Atopic dermatitis skin,-0.64,11
+HDC,CRSwNP polyp (RNA-seq),1.15,11
+HDC,Eosinophilic oesophagitis,2.96,11
+DQX1,AR/asthma nasal (child),0.41,12
+DQX1,Asthma nasal,0.45,12
+DQX1,Asthma bronchial,0.44,12
+DQX1,CRSwNP polyp (array),1.26,12
+DQX1,Atopic dermatitis skin,0.61,12
+DQX1,CRSwNP polyp (RNA-seq),0.89,12
+DQX1,Eosinophilic oesophagitis,0.89,12
+ALOX15,AR/asthma nasal (child),0.74,13
+ALOX15,Asthma nasal,0.31,13
+ALOX15,Asthma bronchial,0.38,13
+ALOX15,CRSwNP polyp (array),0.83,13
+ALOX15,Atopic dermatitis skin,0.27,13
+ALOX15,CRSwNP polyp (RNA-seq),2.02,13
+ALOX15,Eosinophilic oesophagitis,7.52,13
+PTHLH,AR/asthma nasal (child),0.92,14
+PTHLH,CRSwNP polyp (array),1.89,14
+PTHLH,Atopic dermatitis skin,0.18,14
+PTHLH,CRSwNP polyp (RNA-seq),2.69,14
+PTHLH,Eosinophilic oesophagitis,0.29,14
+MAP2K6,AR/asthma nasal (child),0.03,15
+MAP2K6,Asthma nasal,0.44,15
+MAP2K6,Asthma bronchial,0.46,15
+MAP2K6,CRSwNP polyp (array),1.21,15
+MAP2K6,Atopic dermatitis skin,0.12,15
+MAP2K6,CRSwNP polyp (RNA-seq),1.0,15
+MAP2K6,Eosinophilic oesophagitis,0.85,15
+HPGDS,AR/asthma nasal (child),0.68,16
+HPGDS,Asthma nasal,1.05,16
+HPGDS,Asthma bronchial,0.98,16
+HPGDS,CRSwNP polyp (array),2.32,16
+HPGDS,Atopic dermatitis skin,-2.15,16
+HPGDS,CRSwNP polyp (RNA-seq),0.75,16
+HPGDS,Eosinophilic oesophagitis,2.06,16
+ST6GAL1,AR/asthma nasal (child),0.58,17
+ST6GAL1,Asthma nasal,0.22,17
+ST6GAL1,Asthma bronchial,0.18,17
+ST6GAL1,CRSwNP polyp (array),2.26,17
+ST6GAL1,Atopic dermatitis skin,0.41,17
+ST6GAL1,CRSwNP polyp (RNA-seq),0.78,17
+ST6GAL1,Eosinophilic oesophagitis,1.15,17
+SLAMF8,AR/asthma nasal (child),0.04,18
+SLAMF8,CRSwNP polyp (array),2.29,18
+SLAMF8,Atopic dermatitis skin,1.75,18
+SLAMF8,CRSwNP polyp (RNA-seq),1.53,18
+SLAMF8,Eosinophilic oesophagitis,0.57,18
+CEP72,AR/asthma nasal (child),0.37,19
+CEP72,Asthma nasal,0.29,19
+CEP72,Asthma bronchial,0.28,19
+CEP72,CRSwNP polyp (array),1.37,19
+CEP72,Atopic dermatitis skin,0.3,19
+CEP72,CRSwNP polyp (RNA-seq),0.98,19
+CEP72,Eosinophilic oesophagitis,1.6,19
+RCC1,Asthma nasal,0.33,20
+RCC1,Asthma bronchial,0.42,20
+RCC1,CRSwNP polyp (array),0.4,20
+RCC1,Atopic dermatitis skin,0.38,20
+RCC1,CRSwNP polyp (RNA-seq),0.72,20
+RCC1,Eosinophilic oesophagitis,0.38,20
+GSDMC,AR/asthma nasal (child),0.65,21
+GSDMC,Asthma nasal,0.2,21
+GSDMC,Asthma bronchial,0.17,21
+GSDMC,CRSwNP polyp (array),0.76,21
+GSDMC,Atopic dermatitis skin,1.05,21
+GSDMC,CRSwNP polyp (RNA-seq),1.49,21
+GSDMC,Eosinophilic oesophagitis,1.16,21
+CISH,AR/asthma nasal (child),0.51,22
+CISH,Asthma nasal,0.45,22
+CISH,Asthma bronchial,0.12,22
+CISH,CRSwNP polyp (array),1.19,22
+CISH,Atopic dermatitis skin,1.26,22
+CISH,CRSwNP polyp (RNA-seq),0.66,22
+CISH,Eosinophilic oesophagitis,2.31,22
+PP7080,Asthma nasal,1.09,23
+PP7080,Asthma bronchial,0.39,23
+PP7080,CRSwNP polyp (array),1.17,23
+PP7080,Atopic dermatitis skin,0.11,23
+PP7080,Eosinophilic oesophagitis,2.94,23
+CLC,AR/asthma nasal (child),1.55,24
+CLC,Asthma nasal,0.92,24
+CLC,Asthma bronchial,0.78,24
+CLC,CRSwNP polyp (array),5.72,24
+CLC,Eosinophilic oesophagitis,3.27,24
+OXR1,AR/asthma nasal (child),-0.05,25
+OXR1,Asthma nasal,-0.06,25
+OXR1,Asthma bronchial,-0.18,25
+OXR1,CRSwNP polyp (array),-1.29,25
+OXR1,Atopic dermatitis skin,-0.81,25
+OXR1,CRSwNP polyp (RNA-seq),-1.28,25
+OXR1,Eosinophilic oesophagitis,-0.58,25
+INSR,AR/asthma nasal (child),-0.14,26
+INSR,Asthma nasal,-0.37,26
+INSR,Asthma bronchial,-0.48,26
+INSR,CRSwNP polyp (array),-0.09,26
+INSR,Atopic dermatitis skin,0.7,26
+INSR,CRSwNP polyp (RNA-seq),-1.02,26
+COQ8A,AR/asthma nasal (child),-0.26,27
+COQ8A,Asthma nasal,-0.16,27
+COQ8A,Asthma bronchial,-0.13,27
+COQ8A,Atopic dermatitis skin,-0.57,27
+COQ8A,CRSwNP polyp (RNA-seq),-0.9,27
+KANK1,AR/asthma nasal (child),-0.11,28
+KANK1,Asthma nasal,-0.15,28
+KANK1,Asthma bronchial,-0.4,28
+KANK1,CRSwNP polyp (array),-0.93,28
+KANK1,Atopic dermatitis skin,-0.66,28
+KANK1,CRSwNP polyp (RNA-seq),-0.39,28
+KANK1,Eosinophilic oesophagitis,-0.41,28
+PEBP1,AR/asthma nasal (child),-0.19,29
+PEBP1,CRSwNP polyp (array),-0.58,29
+PEBP1,Atopic dermatitis skin,-0.05,29
+PEBP1,CRSwNP polyp (RNA-seq),-0.87,29
+PEBP1,Eosinophilic oesophagitis,-0.59,29
+TGFBR3,AR/asthma nasal (child),0.03,30
+TGFBR3,Asthma nasal,-0.34,30
+TGFBR3,Asthma bronchial,-0.54,30
+TGFBR3,CRSwNP polyp (array),-0.2,30
+TGFBR3,Atopic dermatitis skin,-0.6,30
+TGFBR3,CRSwNP polyp (RNA-seq),-1.31,30
+TGFBR3,Eosinophilic oesophagitis,-0.16,30
+KIF21A,AR/asthma nasal (child),-0.27,31
+KIF21A,Asthma nasal,-0.29,31
+KIF21A,Asthma bronchial,-0.2,31
+KIF21A,CRSwNP polyp (array),-0.98,31
+KIF21A,Atopic dermatitis skin,-0.91,31
+KIF21A,CRSwNP polyp (RNA-seq),-0.49,31
+KIF21A,Eosinophilic oesophagitis,-0.86,31
+NUCB2,AR/asthma nasal (child),-0.17,32
+NUCB2,Asthma nasal,-0.12,32
+NUCB2,Asthma bronchial,-0.06,32
+NUCB2,CRSwNP polyp (array),-0.94,32
+NUCB2,Atopic dermatitis skin,-0.66,32
+NUCB2,CRSwNP polyp (RNA-seq),-1.48,32
+NUCB2,Eosinophilic oesophagitis,-1.58,32
+NEURL3,AR/asthma nasal (child),-0.26,33
+NEURL3,Asthma nasal,-0.31,33
+NEURL3,Asthma bronchial,-0.34,33
+NEURL3,Atopic dermatitis skin,0.15,33
+NEURL3,CRSwNP polyp (RNA-seq),-2.16,33
+RTN1,AR/asthma nasal (child),-0.05,34
+RTN1,Asthma bronchial,-0.83,34
+RTN1,CRSwNP polyp (array),-1.61,34
+RTN1,Atopic dermatitis skin,-0.44,34
+RTN1,CRSwNP polyp (RNA-seq),-1.86,34
+DEPTOR,AR/asthma nasal (child),-0.36,35
+DEPTOR,Asthma nasal,-0.26,35
+DEPTOR,Asthma bronchial,-0.2,35
+DEPTOR,CRSwNP polyp (array),-2.49,35
+DEPTOR,Atopic dermatitis skin,-0.24,35
+DEPTOR,CRSwNP polyp (RNA-seq),-1.83,35
+DEPTOR,Eosinophilic oesophagitis,-1.13,35
+DLG2,AR/asthma nasal (child),-0.26,36
+DLG2,Asthma nasal,-0.25,36
+DLG2,CRSwNP polyp (array),-1.31,36
+DLG2,Atopic dermatitis skin,-0.67,36
+DLG2,CRSwNP polyp (RNA-seq),-1.22,36
+DLG2,Eosinophilic oesophagitis,-0.2,36
+PPM1K,Asthma nasal,-0.4,37
+PPM1K,Asthma bronchial,-0.25,37
+PPM1K,CRSwNP polyp (array),0.23,37
+PPM1K,Atopic dermatitis skin,-0.27,37
+PPM1K,CRSwNP polyp (RNA-seq),-1.01,37
+PPM1K,Eosinophilic oesophagitis,-0.59,37
+PDGFC,AR/asthma nasal (child),-0.21,38
+PDGFC,Asthma nasal,-0.18,38
+PDGFC,Asthma bronchial,-0.24,38
+PDGFC,CRSwNP polyp (array),-0.86,38
+PDGFC,Atopic dermatitis skin,-0.54,38
+PDGFC,CRSwNP polyp (RNA-seq),-1.02,38
+SEC63,AR/asthma nasal (child),-0.1,39
+SEC63,Asthma nasal,-0.22,39
+SEC63,Asthma bronchial,-0.19,39
+SEC63,CRSwNP polyp (array),-0.77,39
+SEC63,Atopic dermatitis skin,-0.68,39
+SEC63,CRSwNP polyp (RNA-seq),-0.66,39
+SEC63,Eosinophilic oesophagitis,0.33,39

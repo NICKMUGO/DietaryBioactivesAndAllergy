@@ -1,0 +1,211 @@
+dataset,featureset,AUROC
+AR/asthma nasal (child),Bioactive hub targets,0.7767
+AR/asthma nasal (child),Bioactive hub targets,0.7733
+AR/asthma nasal (child),Bioactive hub targets,0.7583
+AR/asthma nasal (child),Bioactive hub targets,0.7933
+AR/asthma nasal (child),Bioactive hub targets,0.785
+AR/asthma nasal (child),Bioactive hub targets,0.8033
+AR/asthma nasal (child),Bioactive hub targets,0.8017
+AR/asthma nasal (child),Bioactive hub targets,0.7533
+AR/asthma nasal (child),Bioactive hub targets,0.7917
+AR/asthma nasal (child),Bioactive hub targets,0.7867
+AR/asthma nasal (child),Bioactive hub targets,0.81
+AR/asthma nasal (child),Bioactive hub targets,0.8133
+AR/asthma nasal (child),Bioactive hub targets,0.8117
+AR/asthma nasal (child),Bioactive hub targets,0.7517
+AR/asthma nasal (child),Bioactive hub targets,0.8517
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.7933
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.8133
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.8133
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.825
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.7867
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.8
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.82
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.7933
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.7467
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.81
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.8017
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.7717
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.7833
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.8067
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),0.8033
+Asthma nasal,Bioactive hub targets,0.8917
+Asthma nasal,Bioactive hub targets,0.8875
+Asthma nasal,Bioactive hub targets,0.8896
+Asthma nasal,Bioactive hub targets,0.8833
+Asthma nasal,Bioactive hub targets,0.9
+Asthma nasal,Bioactive hub targets,0.8896
+Asthma nasal,Bioactive hub targets,0.9
+Asthma nasal,Bioactive hub targets,0.8844
+Asthma nasal,Bioactive hub targets,0.8969
+Asthma nasal,Bioactive hub targets,0.9031
+Asthma nasal,Bioactive hub targets,0.9146
+Asthma nasal,Bioactive hub targets,0.9156
+Asthma nasal,Bioactive hub targets,0.9177
+Asthma nasal,Bioactive hub targets,0.901
+Asthma nasal,Bioactive hub targets,0.9156
+Asthma nasal,Bioactive-targeted signature (LOO),0.9
+Asthma nasal,Bioactive-targeted signature (LOO),0.8927
+Asthma nasal,Bioactive-targeted signature (LOO),0.9198
+Asthma nasal,Bioactive-targeted signature (LOO),0.9177
+Asthma nasal,Bioactive-targeted signature (LOO),0.8792
+Asthma nasal,Bioactive-targeted signature (LOO),0.9
+Asthma nasal,Bioactive-targeted signature (LOO),0.9083
+Asthma nasal,Bioactive-targeted signature (LOO),0.8823
+Asthma nasal,Bioactive-targeted signature (LOO),0.8917
+Asthma nasal,Bioactive-targeted signature (LOO),0.8865
+Asthma nasal,Bioactive-targeted signature (LOO),0.9229
+Asthma nasal,Bioactive-targeted signature (LOO),0.8948
+Asthma nasal,Bioactive-targeted signature (LOO),0.8781
+Asthma nasal,Bioactive-targeted signature (LOO),0.9031
+Asthma nasal,Bioactive-targeted signature (LOO),0.8688
+Asthma bronchial,Bioactive hub targets,0.8861
+Asthma bronchial,Bioactive hub targets,0.8911
+Asthma bronchial,Bioactive hub targets,0.9069
+Asthma bronchial,Bioactive hub targets,0.8817
+Asthma bronchial,Bioactive hub targets,0.8889
+Asthma bronchial,Bioactive hub targets,0.8902
+Asthma bronchial,Bioactive hub targets,0.9139
+Asthma bronchial,Bioactive hub targets,0.9037
+Asthma bronchial,Bioactive hub targets,0.9152
+Asthma bronchial,Bioactive hub targets,0.9069
+Asthma bronchial,Bioactive hub targets,0.9237
+Asthma bronchial,Bioactive hub targets,0.9141
+Asthma bronchial,Bioactive hub targets,0.9033
+Asthma bronchial,Bioactive hub targets,0.9017
+Asthma bronchial,Bioactive hub targets,0.898
+Asthma bronchial,Bioactive-targeted signature (LOO),0.8896
+Asthma bronchial,Bioactive-targeted signature (LOO),0.9243
+Asthma bronchial,Bioactive-targeted signature (LOO),0.9167
+Asthma bronchial,Bioactive-targeted signature (LOO),0.917
+Asthma bronchial,Bioactive-targeted signature (LOO),0.9339
+Asthma bronchial,Bioactive-targeted signature (LOO),0.8896
+Asthma bronchial,Bioactive-targeted signature (LOO),0.9304
+Asthma bronchial,Bioactive-targeted signature (LOO),0.9207
+Asthma bronchial,Bioactive-targeted signature (LOO),0.8869
+Asthma bronchial,Bioactive-targeted signature (LOO),0.8937
+Asthma bronchial,Bioactive-targeted signature (LOO),0.9011
+Asthma bronchial,Bioactive-targeted signature (LOO),0.9033
+Asthma bronchial,Bioactive-targeted signature (LOO),0.8713
+Asthma bronchial,Bioactive-targeted signature (LOO),0.9476
+Asthma bronchial,Bioactive-targeted signature (LOO),0.8935
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive hub targets,1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),1.0
+Atopic dermatitis skin,Bioactive hub targets,1.0
+Atopic dermatitis skin,Bioactive hub targets,1.0
+Atopic dermatitis skin,Bioactive hub targets,0.9
+Atopic dermatitis skin,Bioactive hub targets,0.975
+Atopic dermatitis skin,Bioactive hub targets,0.975
+Atopic dermatitis skin,Bioactive hub targets,0.9333
+Atopic dermatitis skin,Bioactive hub targets,1.0
+Atopic dermatitis skin,Bioactive hub targets,0.8667
+Atopic dermatitis skin,Bioactive hub targets,0.75
+Atopic dermatitis skin,Bioactive hub targets,1.0
+Atopic dermatitis skin,Bioactive hub targets,1.0
+Atopic dermatitis skin,Bioactive hub targets,1.0
+Atopic dermatitis skin,Bioactive hub targets,0.9
+Atopic dermatitis skin,Bioactive hub targets,1.0
+Atopic dermatitis skin,Bioactive hub targets,1.0
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.9333
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.8667
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.8583
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.95
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.85
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),1.0
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),1.0
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.95
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.95
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.925
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.9667
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),0.95
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),1.0
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),1.0
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),1.0
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9833
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9875
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9833
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9854
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9896
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9875
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9896
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9875
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9875
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9833
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.975
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9854
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9854
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9833
+CRSwNP polyp (RNA-seq),Bioactive hub targets,0.9875
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9771
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9854
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9811
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9833
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9875
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9812
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9854
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9854
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9811
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9685
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9833
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9854
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9749
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9854
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),0.9833
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive hub targets,1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),1.0

@@ -1,0 +1,36 @@
+metric,value,label
+n_contrasts,7.0,allergic-vs-healthy contrasts
+n_series,6.0,GEO series
+n_tissues,5.0,tissues
+n_samples,291.0,samples analysed after QC
+n_bioactives,44.0,dietary bioactives
+posctrl_up,34.0,positive-control results significantly up
+posctrl_down,2.0,positive-control results significantly down
+posctrl_measured,53.0,positive-control results measured
+n_meta_genes,11870.0,genes in the meta-analysis
+n_sig,1177.0,consensus signature genes
+n_sig_up,860.0,signature genes up in allergy
+n_sig_down,317.0,signature genes down in allergy
+n_enrich_universe,11385.0,genes in the enrichment universe
+n_naive_sig,8.0,"bioactives enriched, naive test (FDR<0.05)"
+n_deg_sig,1.0,"bioactives enriched, degree-matched (FDR<0.05)"
+pct_all_chem_naive,20.3,% of all CTD chemicals 'enriched' by the naive test
+sulf_fe,1.27,sulforaphane degree-matched fold enrichment
+sulf_fdr,0.029,sulforaphane degree-matched FDR
+mw_p,0.752,"dietary vs other chemicals, Mann-Whitney p"
+n_other_chem,1046.0,size-matched non-dietary chemicals
+ols_coef,-0.028,regression: dietary effect on log2 FE
+ols_lo,-0.184,regression 95% CI low
+ols_hi,0.128,regression 95% CI high
+rev_pct,47.1,% of bioactive effects opposing disease
+rev_expected_pct,50.4,% expected from direction biases
+rev_n_compounds,14.0,bioactives with >=10 directional signature targets
+rev_n_sig,0.0,bioactives with significant reversal
+rev_mw_p,0.787,"reversal, dietary vs other chemicals, Mann-Whitney p"
+n_hub,1013.0,bioactive hub target genes (>=4 compounds)
+hub_pct_random,50.0,% of random gene sets beaten by hub targets
+lodo_hub,0.841,"LODO mean AUROC, hub targets"
+lodo_random,0.825,"LODO mean AUROC, random genes"
+lodo_p,0.38,LODO hub vs random empirical p
+lodo_sig,0.799,"LODO mean AUROC, untrained signature score"
+n_net_genes,35.0,hub genes drawn in the network

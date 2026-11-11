@@ -1,0 +1,9 @@
+dataset,lr_hub,lr_random_mean,lr_random_sd,sig_score,bio_sig_score
+AR/asthma nasal (child),0.7508,0.6653,0.0797,0.7071,0.7003
+Asthma nasal,0.8922,0.9092,0.0276,0.6328,0.6438
+Asthma bronchial,0.8048,0.8483,0.026,0.7007,0.7082
+CRSwNP polyp (array),0.75,0.8907,0.0856,1.0,1.0
+Atopic dermatitis skin,0.9479,0.75,0.1552,0.7812,0.8021
+CRSwNP polyp (RNA-seq),0.773,0.8158,0.0592,0.858,0.8656
+Eosinophilic oesophagitis,0.9667,0.8978,0.1339,0.9167,0.9167
+mean,0.8408,0.8253,0.081,0.7995,0.8052

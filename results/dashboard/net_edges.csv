@@ -1,0 +1,313 @@
+source,target,effect
+MMP9,Quercetin,reverses
+MMP9,kaempferol,reverses
+MMP9,Luteolin,reinforces
+MMP9,fisetin,none
+MMP9,naringenin,reverses
+MMP9,epigallocatechin gallate,none
+MMP9,Genistein,reverses
+MMP9,Resveratrol,reverses
+MMP9,Curcumin,reverses
+MMP9,Gallic Acid,reverses
+MMP9,"3,3'-diindolylmethane",none
+MMP9,Capsaicin,reinforces
+MMP9,Eugenol,reverses
+MMP9,Ascorbic Acid,none
+MMP9,Oleic Acid,none
+MGMT,epigallocatechin gallate,reinforces
+MGMT,Genistein,reinforces
+MGMT,Curcumin,reverses
+MGMT,Gallic Acid,reverses
+MGMT,Butyric Acid,none
+Capsaicin,BAK1,reinforces
+Capsaicin,BAX,reinforces
+Capsaicin,BID,reinforces
+Capsaicin,BIRC2,reinforces
+Capsaicin,CCNA2,reverses
+Capsaicin,CCNB1,reverses
+Capsaicin,CCND1,reinforces
+Capsaicin,CPT1A,reinforces
+Capsaicin,LGALS1,reinforces
+Capsaicin,NFE2L2,none
+Capsaicin,PLAU,reinforces
+Capsaicin,RXRA,reinforces
+Capsaicin,SP1,none
+Capsaicin,TIMP1,reinforces
+PLAU,Quercetin,none
+PLAU,Catechin,reinforces
+PLAU,epigallocatechin gallate,reverses
+PLAU,Genistein,none
+PLAU,Resveratrol,none
+PLAU,Curcumin,none
+PLAU,sulforaphane,reinforces
+PLAU,"3,3'-diindolylmethane",reinforces
+PLAU,cinnamaldehyde,none
+"3,3'-diindolylmethane",BAX,reinforces
+"3,3'-diindolylmethane",CCNB1,reverses
+"3,3'-diindolylmethane",CCND1,reinforces
+"3,3'-diindolylmethane",CXCR4,none
+"3,3'-diindolylmethane",NCOA2,none
+"3,3'-diindolylmethane",NFE2L2,reinforces
+"3,3'-diindolylmethane",TIMP1,reinforces
+nobiletin,BAX,none
+nobiletin,CCNA2,reverses
+nobiletin,SLC2A1,none
+SLC2A1,Quercetin,reverses
+SLC2A1,kaempferol,reverses
+SLC2A1,Luteolin,none
+SLC2A1,naringenin,none
+SLC2A1,epigallocatechin gallate,none
+SLC2A1,Genistein,none
+SLC2A1,daidzein,none
+SLC2A1,Resveratrol,none
+SLC2A1,Curcumin,reverses
+SLC2A1,Caffeine,reinforces
+SLC2A1,Ascorbic Acid,reverses
+SLC2A1,Oleic Acid,none
+SLC2A1,Butyric Acid,reverses
+BIRC2,Luteolin,none
+BIRC2,Genistein,none
+BIRC2,Resveratrol,none
+BIRC2,Curcumin,reverses
+BIRC2,Gallic Acid,reverses
+BIRC2,cinnamaldehyde,reverses
+BIRC2,Caffeine,none
+Catechin,AQP3,none
+Catechin,BAX,reinforces
+Catechin,BID,none
+Catechin,CCNB1,none
+Catechin,CCND1,reinforces
+Catechin,ELK1,none
+Catechin,FOXO3,none
+Catechin,NFE2L2,reinforces
+Catechin,SP1,reinforces
+MKI67,Quercetin,none
+MKI67,Luteolin,none
+MKI67,Resveratrol,reverses
+MKI67,Curcumin,reverses
+MKI67,Caffeine,none
+MKI67,Ascorbic Acid,reverses
+Oleic Acid,BAX,none
+Oleic Acid,CPT1A,none
+Oleic Acid,GPX4,none
+Oleic Acid,NFE2L2,reinforces
+Oleic Acid,RXRA,none
+Oleic Acid,TIMP1,reinforces
+Oleic Acid,VDR,none
+Ascorbic Acid,AQP3,none
+Ascorbic Acid,BAK1,none
+Ascorbic Acid,BAX,reinforces
+Ascorbic Acid,BID,none
+Ascorbic Acid,BUB1,none
+Ascorbic Acid,CCND1,reinforces
+Ascorbic Acid,DLGAP5,none
+Ascorbic Acid,FOXO3,reverses
+Ascorbic Acid,GPX1,reinforces
+Ascorbic Acid,LGALS1,none
+Ascorbic Acid,NFE2L2,reinforces
+Ascorbic Acid,PLK1,none
+Ascorbic Acid,RUNX2,reinforces
+Ascorbic Acid,SOX2,reinforces
+Ascorbic Acid,SP1,reverses
+Ascorbic Acid,TIMP1,reinforces
+VDR,Quercetin,none
+VDR,kaempferol,none
+VDR,Genistein,reinforces
+VDR,Resveratrol,reinforces
+VDR,Curcumin,none
+VDR,Eugenol,reinforces
+SLC2A3,Quercetin,reverses
+SLC2A3,Luteolin,none
+SLC2A3,fisetin,none
+SLC2A3,epigallocatechin gallate,reinforces
+SLC2A3,sulforaphane,reinforces
+SLC2A3,Eugenol,reinforces
+SLC2A3,Caffeine,reinforces
+BAK1,Quercetin,reinforces
+BAK1,fisetin,none
+BAK1,naringenin,reinforces
+BAK1,epigallocatechin gallate,reverses
+BAK1,Genistein,reinforces
+BAK1,Resveratrol,reinforces
+BAK1,Curcumin,reinforces
+PTGS1,Quercetin,reinforces
+PTGS1,naringenin,reinforces
+PTGS1,epigallocatechin gallate,reverses
+PTGS1,Genistein,reverses
+PTGS1,Resveratrol,reverses
+PTGS1,Curcumin,reverses
+PTGS1,sulforaphane,reverses
+PTGS1,Butyric Acid,reinforces
+Quercetin,AQP3,reinforces
+Quercetin,BAX,reinforces
+Quercetin,BID,reinforces
+Quercetin,BUB1,reverses
+Quercetin,CCNA2,reverses
+Quercetin,CCNB1,reverses
+Quercetin,CCND1,reinforces
+Quercetin,CPT1A,reinforces
+Quercetin,CXCR4,reverses
+Quercetin,DLGAP5,reverses
+Quercetin,ELK1,none
+Quercetin,FADD,none
+Quercetin,FOXO3,reinforces
+Quercetin,GPX1,reinforces
+Quercetin,LGALS1,reinforces
+Quercetin,NCOA2,reinforces
+Quercetin,NFE2L2,reinforces
+Quercetin,PLK1,reverses
+Quercetin,RUNX2,reinforces
+Quercetin,SOX2,reverses
+Quercetin,SP1,reverses
+Quercetin,TIMP1,none
+Luteolin,BAX,reinforces
+Luteolin,CCNA2,reverses
+Luteolin,CCNB1,reverses
+Luteolin,CCND1,none
+Luteolin,FOXO3,none
+Luteolin,GPX4,reverses
+Luteolin,NFE2L2,none
+Luteolin,PLK1,reverses
+CXCR4,Genistein,none
+CXCR4,Resveratrol,reverses
+CXCR4,Curcumin,reverses
+CXCR4,Gallic Acid,none
+CXCR4,Eugenol,reinforces
+BAX,kaempferol,reinforces
+BAX,fisetin,reinforces
+BAX,naringenin,reverses
+BAX,epigallocatechin gallate,none
+BAX,Genistein,reinforces
+BAX,Resveratrol,reinforces
+BAX,Curcumin,none
+BAX,Gallic Acid,reinforces
+BAX,sulforaphane,reinforces
+BAX,cinnamaldehyde,reinforces
+BAX,Caffeine,reinforces
+BAX,Butyric Acid,reinforces
+BUB1,epigallocatechin gallate,none
+BUB1,Genistein,none
+BUB1,Resveratrol,reverses
+BUB1,sulforaphane,reinforces
+BUB1,Eugenol,reverses
+BUB1,Caffeine,none
+FADD,naringenin,none
+FADD,epigallocatechin gallate,none
+FADD,Genistein,reinforces
+FADD,Resveratrol,reinforces
+FADD,Curcumin,none
+FADD,Caffeine,none
+fisetin,BID,none
+fisetin,CCNA2,reverses
+fisetin,CCNB1,reverses
+fisetin,CD44,reverses
+fisetin,NFE2L2,reinforces
+ELK1,epigallocatechin gallate,none
+ELK1,Genistein,none
+ELK1,Resveratrol,none
+ELK1,Curcumin,none
+ELK1,Butyric Acid,none
+FOXO3,naringenin,none
+FOXO3,Genistein,none
+FOXO3,Resveratrol,reverses
+FOXO3,Caffeine,none
+AQP3,epigallocatechin gallate,reinforces
+AQP3,Genistein,reinforces
+AQP3,Resveratrol,reinforces
+AQP3,Curcumin,reverses
+AQP3,sulforaphane,reverses
+NCOA2,epigallocatechin gallate,none
+NCOA2,Genistein,none
+NCOA2,daidzein,none
+NCOA2,Resveratrol,none
+NCOA2,Caffeine,none
+TIMP1,Genistein,reverses
+TIMP1,Resveratrol,reverses
+TIMP1,Curcumin,reverses
+TIMP1,sulforaphane,reinforces
+Butyric Acid,CD44,none
+Butyric Acid,NFE2L2,reverses
+CPT1A,Genistein,reinforces
+CPT1A,daidzein,reinforces
+CPT1A,Resveratrol,reinforces
+sulforaphane,BID,reinforces
+sulforaphane,CCNB1,reinforces
+sulforaphane,CCND1,reverses
+sulforaphane,DLGAP5,reinforces
+sulforaphane,GPX1,reverses
+sulforaphane,GPX4,reverses
+sulforaphane,LGALS1,reverses
+sulforaphane,NFE2L2,reinforces
+sulforaphane,PLK1,reinforces
+RXRA,epigallocatechin gallate,reinforces
+RXRA,Genistein,reinforces
+RXRA,Resveratrol,none
+RXRA,Curcumin,none
+RXRA,Caffeine,none
+Resveratrol,BID,none
+Resveratrol,CCNA2,reinforces
+Resveratrol,CCNB1,reverses
+Resveratrol,CCND1,reinforces
+Resveratrol,CD44,reverses
+Resveratrol,DLGAP5,none
+Resveratrol,GPX1,reinforces
+Resveratrol,GPX4,reinforces
+Resveratrol,LGALS1,reverses
+Resveratrol,NFE2L2,reinforces
+Resveratrol,PLK1,reverses
+Resveratrol,RUNX2,reinforces
+Resveratrol,SOX2,reverses
+Resveratrol,SP1,none
+SOX2,kaempferol,reverses
+SOX2,naringenin,reverses
+SOX2,Genistein,reverses
+DLGAP5,epigallocatechin gallate,none
+DLGAP5,Genistein,reverses
+DLGAP5,Eugenol,reverses
+DLGAP5,Caffeine,none
+daidzein,CCNA2,reverses
+daidzein,CCND1,reverses
+RUNX2,epigallocatechin gallate,none
+RUNX2,Curcumin,reverses
+GPX4,Curcumin,none
+PLK1,Genistein,reverses
+PLK1,Curcumin,reverses
+PLK1,Caffeine,none
+GPX1,epigallocatechin gallate,reverses
+GPX1,Genistein,reinforces
+GPX1,Curcumin,none
+SP1,epigallocatechin gallate,none
+SP1,Genistein,reinforces
+SP1,Curcumin,reverses
+SP1,Caffeine,reverses
+Eugenol,CD44,reverses
+Eugenol,NFE2L2,reverses
+NFE2L2,kaempferol,reinforces
+NFE2L2,naringenin,reinforces
+NFE2L2,epigallocatechin gallate,reinforces
+NFE2L2,Genistein,reinforces
+NFE2L2,Curcumin,reinforces
+NFE2L2,Gallic Acid,none
+NFE2L2,cinnamaldehyde,reinforces
+CD44,kaempferol,reverses
+CD44,Genistein,none
+CD44,Curcumin,reinforces
+Caffeine,BID,none
+Caffeine,CCNB1,none
+kaempferol,CCNB1,reverses
+kaempferol,CCND1,none
+CCND1,naringenin,reinforces
+CCND1,epigallocatechin gallate,reinforces
+CCND1,Genistein,none
+CCND1,Curcumin,reinforces
+BID,Genistein,reverses
+BID,Curcumin,none
+BID,cinnamaldehyde,none
+LGALS1,epigallocatechin gallate,reverses
+LGALS1,Genistein,reverses
+epigallocatechin gallate,CCNB1,none
+CCNB1,naringenin,none
+CCNB1,Genistein,reinforces
+CCNB1,Curcumin,reverses
+Genistein,CCNA2,reverses
+Curcumin,CCNA2,reverses

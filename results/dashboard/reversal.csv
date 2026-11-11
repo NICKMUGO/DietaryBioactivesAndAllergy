@@ -1,0 +1,15 @@
+ctd_name,compound,n_dir_sig,n_reversed,reversal,expected_reversal,excess,p,FDR
+Curcumin,Curcumin (turmeric),49.0,34.0,0.6939,0.5477,0.1462,0.0266,0.3719
+epigallocatechin gallate,EGCG (green tea),46.0,28.0,0.6087,0.491,0.1177,0.0733,0.5133
+Butyric Acid,Butyrate,17.0,9.0,0.5294,0.4197,0.1097,0.2494,0.8728
+Eugenol,Eugenol (clove),25.0,13.0,0.52,0.4193,0.1007,0.2059,0.8728
+Gallic Acid,Gallic acid,27.0,15.0,0.5556,0.5506,0.005,0.5587,0.9934
+Resveratrol,Resveratrol,107.0,49.0,0.4579,0.4742,-0.0162,0.6668,0.9934
+Caffeine,Caffeine,19.0,10.0,0.5263,0.5569,-0.0306,0.693,0.9934
+Catechin,Catechin,11.0,5.0,0.4545,0.5039,-0.0494,0.7343,0.9934
+Genistein,Genistein (soy),121.0,51.0,0.4215,0.4808,-0.0593,0.9191,0.9934
+sulforaphane,Sulforaphane (broccoli),134.0,61.0,0.4552,0.5207,-0.0655,0.9456,0.9934
+Quercetin,Quercetin,277.0,127.0,0.4585,0.5311,-0.0726,0.9934,0.9934
+Ascorbic Acid,Vitamin C,19.0,8.0,0.4211,0.5346,-0.1135,0.8891,0.9934
+Capsaicin,Capsaicin (chili),24.0,6.0,0.25,0.3847,-0.1347,0.9453,0.9934
+cinnamaldehyde,Cinnamaldehyde,12.0,2.0,0.1667,0.3837,-0.217,0.9746,0.9934

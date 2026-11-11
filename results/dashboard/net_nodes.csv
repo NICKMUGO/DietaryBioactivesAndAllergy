@@ -1,0 +1,58 @@
+id,kind,label,dir,degree,x,y
+MMP9,gene,MMP9,1,28,-0.1366,0.2837
+MGMT,gene,MGMT,1,7,-0.7323,-0.034
+Capsaicin,compound,Capsaicin (chili),0,30,0.3139,-0.0178
+PLAU,gene,PLAU,1,13,0.404,0.0858
+"3,3'-diindolylmethane",compound,DIM,0,12,0.1825,0.5615
+nobiletin,compound,Nobiletin,0,13,0.2104,1.0
+SLC2A1,gene,SLC2A1,1,16,0.0228,0.3545
+BIRC2,gene,BIRC2,1,10,0.5384,0.0384
+Catechin,compound,Catechin,0,47,0.251,-0.2219
+MKI67,gene,MKI67,1,7,0.4267,-0.5521
+Oleic Acid,compound,Oleic acid,0,28,0.4759,0.3532
+Ascorbic Acid,compound,Vitamin C,0,56,-0.0581,-0.2855
+VDR,gene,VDR,1,9,-0.1235,0.4726
+SLC2A3,gene,SLC2A3,1,8,-0.3928,-0.1941
+BAK1,gene,BAK1,1,10,-0.3137,-0.0315
+PTGS1,gene,PTGS1,1,9,-0.5455,-0.2268
+Quercetin,compound,Quercetin,0,324,-0.0421,-0.1444
+Luteolin,compound,Luteolin,0,15,0.2313,-0.0879
+CXCR4,gene,CXCR4,1,8,-0.367,0.3367
+BAX,gene,BAX,1,36,0.0648,0.2542
+BUB1,gene,BUB1,1,8,-0.4102,-0.4686
+FADD,gene,FADD,1,8,-0.2891,-0.4908
+fisetin,compound,Fisetin,0,13,-0.2717,0.4853
+ELK1,gene,ELK1,1,10,-0.4842,-0.1107
+FOXO3,gene,FOXO3,-1,9,-0.0961,-0.5014
+AQP3,gene,AQP3,1,9,0.2855,-0.5036
+NCOA2,gene,NCOA2,-1,8,0.3509,0.2693
+TIMP1,gene,TIMP1,1,10,0.4464,-0.0837
+Butyric Acid,compound,Butyrate,0,21,-0.6526,0.3469
+CPT1A,gene,CPT1A,1,8,0.6394,0.2005
+sulforaphane,compound,Sulforaphane (broccoli),0,139,0.0502,-0.3152
+RXRA,gene,RXRA,-1,13,0.4975,-0.2715
+Resveratrol,compound,Resveratrol,0,396,0.0418,-0.1231
+SOX2,gene,SOX2,1,7,-0.5243,0.1568
+DLGAP5,gene,DLGAP5,1,8,-0.4419,-0.3727
+daidzein,compound,Daidzein (soy),0,22,0.5739,0.7108
+RUNX2,gene,RUNX2,1,9,-0.2795,-0.7081
+GPX4,gene,GPX4,1,10,0.6915,-0.2117
+PLK1,gene,PLK1,1,9,0.1998,-0.612
+GPX1,gene,GPX1,1,9,-0.1163,-0.6515
+SP1,gene,SP1,1,11,0.1655,-0.4911
+Eugenol,compound,Eugenol (clove),0,25,-0.6765,0.143
+NFE2L2,gene,NFE2L2,1,32,-0.0294,0.2029
+CD44,gene,CD44,1,9,-0.512,0.4484
+Caffeine,compound,Caffeine,0,267,0.1313,-0.2756
+kaempferol,compound,Kaempferol,0,13,-0.2433,0.6557
+CCND1,gene,CCND1,-1,24,0.1485,0.1881
+BID,gene,BID,1,14,0.2574,0.1023
+Gallic Acid,compound,Gallic acid,0,33,-0.1858,0.2255
+LGALS1,gene,LGALS1,1,7,0.061,-0.6448
+epigallocatechin gallate,compound,EGCG (green tea),0,198,-0.1468,-0.2041
+CCNB1,gene,CCNB1,1,20,-0.074,0.1132
+Genistein,compound,Genistein (soy),0,162,-0.0645,-0.0538
+cinnamaldehyde,compound,Cinnamaldehyde,0,14,0.6777,0.4567
+naringenin,compound,Naringenin,0,17,-0.3794,0.0723
+Curcumin,compound,Curcumin (turmeric),0,79,0.0122,-0.0687
+CCNA2,gene,CCNA2,1,10,0.2371,0.4405

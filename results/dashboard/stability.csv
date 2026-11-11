@@ -1,0 +1,8 @@
+left_out,signature_genes,jaccard
+AR/asthma nasal (child),1273.0,0.643
+Asthma nasal,1340.0,0.652
+Asthma bronchial,1097.0,0.573
+CRSwNP polyp (array),1095.0,0.689
+Atopic dermatitis skin,1000.0,0.521
+CRSwNP polyp (RNA-seq),788.0,0.395
+Eosinophilic oesophagitis,856.0,0.445

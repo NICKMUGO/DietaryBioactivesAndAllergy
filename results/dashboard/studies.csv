@@ -1,0 +1,8 @@
+dataset,GEO,tissue,data_type,genes_raw,allergic,healthy,genes_tested,up,down
+AR/asthma nasal (child),GSE19187,nasal epithelium,Microarray,19036,27,11,15228,41,2
+Asthma nasal,GSE41861,nasal epithelium,Microarray,15086,40,16,11834,42,24
+Asthma bronchial,GSE41861,bronchial epithelium,Microarray,15086,49,30,11732,59,124
+CRSwNP polyp (array),GSE36830,sinonasal tissue,Microarray,20848,6,6,16678,554,200
+Atopic dermatitis skin,GSE32924,skin,Microarray,20848,12,8,15837,1975,1408
+CRSwNP polyp (RNA-seq),GSE136825,sinonasal tissue,RNA-seq (counts),41764,42,28,16687,2343,1523
+Eosinophilic oesophagitis,GSE58640,oesophagus,RNA-seq (FPKM),28480,10,6,12282,4359,875

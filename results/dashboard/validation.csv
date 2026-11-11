@@ -1,0 +1,8 @@
+gene_set,curated_genes,in_signature,FE_naive,p_naive,FE_degmatched,p_degmatched,example_genes
+"Allergic diseases (asthma, AD, AR, hypersensitivity, EoE, polyps, sinusitis)",116,14,1.20005,0.27549,0.91678,0.68582,"ALOX15, CCR1, CCR5, CD274, HNMT, HRH1, IL4R, KITLG, MAP2K6, MMP9"
+Asthma,57,6,1.04666,0.51725,0.75722,0.82641,"HNMT, IL4R, MMP9, PLAU, SPRY2, TNC"
+Atopic dermatitis,22,1,0.45197,0.90311,0.36416,0.948,CCR5
+Negative control: Alzheimer disease,70,10,1.42046,0.162,1.13312,0.38528,"ABI3, ADAM10, BAX, CD33, DHCR24, ENO1, INSR, PLAU, TF, VSNL1"
+Negative control: Parkinson disease,47,6,1.26935,0.33333,0.96318,0.60362,"DNM1L, GSTA4, INSR, MAP2, PINK1, RAB32"
+Negative control: Schizophrenia,86,12,1.38743,0.15219,1.18203,0.31213,"AHI1, APOL2, CCDC137, DPYD, FAM3D, GPR153, GSK3A, HINT1, HRH1, PAG1"
+Negative control: Type 2 diabetes,103,11,1.0619,0.46422,0.84456,0.77431,"BAX, CMIP, CPT1A, GPX1, IRS2, JADE2, SLC2A1, ST6GAL1, TIMP1, UBE2E2"

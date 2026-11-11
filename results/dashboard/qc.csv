@@ -1,0 +1,8 @@
+dataset,genes_before,samples_before,max_value,transform,genes_after,samples_after,outliers_removed,sex_check
+AR/asthma nasal (child),19036,38,14.2,already log2,15228,38,–,1 mismatch (GSM475645)
+Asthma nasal,15086,57,15.8,already log2,11834,56,GSM1026436,not testable: no sex signal (values look sex-adjusted)
+Asthma bronchial,15086,81,15.0,already log2,11732,79,"GSM1026557, GSM1026558",not testable: no sex signal (values look sex-adjusted)
+CRSwNP polyp (array),20848,12,328.3,log2 applied (was linear),16678,12,–,no sex recorded
+Atopic dermatitis skin,20848,21,16.2,already log2,15837,20,GSM815448,no sex recorded
+CRSwNP polyp (RNA-seq),41764,70,3517484.0,"median-of-ratios, log2(CPM+1)",16687,70,–,passed
+Eosinophilic oesophagitis,28480,16,877729.0,log2(FPKM+1),12282,16,–,no sex recorded

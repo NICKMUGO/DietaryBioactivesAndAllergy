@@ -1,0 +1,45 @@
+ctd_name,compound,class,n_targets,overlap,expected_naive,FE_naive,FDR_naive,expected_degmatched,FE_degmatched,z_degmatched,p_degmatched,FDR_degmatched,pct_rank_vs_other
+daidzein,Daidzein (soy),isoflavone,123.0,22.0,12.3702,1.7785,0.029,16.3606,1.3447,1.5358,0.0834,0.7755,90.7266
+Chlorogenic Acid,Chlorogenic acid (coffee),phenolic acid,44.0,8.0,4.4251,1.8079,0.1908,6.2027,1.2898,0.7891,0.2787,0.9962,87.9541
+Eugenol,Eugenol (clove),spice compound,136.0,25.0,13.6776,1.8278,0.0178,19.5047,1.2817,1.4049,0.1057,0.7755,86.9981
+sulforaphane,Sulforaphane (broccoli),isothiocyanate,894.0,139.0,89.9104,1.546,0.0,109.6221,1.268,3.3354,0.0006,0.0286,86.1377
+Ascorbic Acid,Vitamin C,vitamin,329.0,56.0,33.0878,1.6925,0.0007,45.0322,1.2436,1.9036,0.037,0.5434,83.9388
+fisetin,Fisetin,flavonoid,72.0,13.0,7.2411,1.7953,0.1273,10.93,1.1894,0.7003,0.2898,0.9962,79.3499
+Linoleic Acid,Linoleic acid,fatty acid,34.0,6.0,3.4194,1.7547,0.2949,5.0467,1.1889,0.4664,0.3868,0.9962,79.3499
+baicalein,Baicalein,flavonoid,68.0,12.0,6.8388,1.7547,0.1635,10.2366,1.1723,0.6146,0.3236,0.9962,77.7247
+Capsaicin,Capsaicin (chili),spice compound,177.0,30.0,17.8011,1.6853,0.0185,25.6668,1.1688,0.9809,0.1926,0.9962,77.4379
+indole-3-carbinol,Indole-3-carbinol,indole,62.0,11.0,6.2354,1.7641,0.1641,9.5014,1.1577,0.5423,0.3434,0.9962,76.8642
+Genistein,Genistein (soy),isoflavone,1135.0,162.0,114.148,1.4192,0.0,142.1534,1.1396,2.0942,0.0219,0.4818,74.9522
+Curcumin,Curcumin (turmeric),curcuminoid,512.0,79.0,51.4923,1.5342,0.0007,69.7321,1.1329,1.3476,0.1032,0.7755,74.1874
+"3,3'-diindolylmethane",DIM,indole,74.0,12.0,7.4422,1.6124,0.1908,10.8157,1.1095,0.3992,0.3936,0.9962,72.0841
+thymoquinone,Thymoquinone (black seed),spice compound,76.0,12.0,7.6434,1.57,0.1971,11.5973,1.0347,0.1326,0.4952,0.9962,63.0019
+epigallocatechin gallate,EGCG (green tea),flavonoid,1766.0,198.0,177.6083,1.1148,0.1641,196.0614,1.0099,0.166,0.4518,0.9962,59.5602
+Quercetin,Quercetin,flavonoid,2824.0,324.0,284.0123,1.1408,0.0178,323.0333,1.003,0.0738,0.4856,0.9962,58.5086
+Oleic Acid,Oleic acid,fatty acid,203.0,28.0,20.4159,1.3715,0.177,28.319,0.9887,-0.0682,0.5608,0.9962,55.8317
+hesperetin,Hesperetin,flavonoid,41.0,6.0,4.1234,1.4551,0.4149,6.0785,0.9871,-0.035,0.5871,0.9962,55.7361
+Resveratrol,Resveratrol,stilbene,3706.0,396.0,372.7159,1.0625,0.1908,402.7293,0.9833,-0.4628,0.6846,0.9962,55.1625
+gingerol,Gingerol (ginger),spice compound,41.0,6.0,4.1234,1.4551,0.4149,6.2311,0.9629,-0.1022,0.6123,0.9962,51.1472
+beta Carotene,β-Carotene,carotenoid,71.0,9.0,7.1405,1.2604,0.4606,9.5275,0.9446,-0.1866,0.6216,0.9962,48.6616
+Docosahexaenoic Acids,DHA (omega-3),fatty acid,58.0,8.0,5.8331,1.3715,0.4149,8.6704,0.9227,-0.2524,0.6488,0.9962,45.4111
+kaempferol,Kaempferol,flavonoid,95.0,13.0,9.5542,1.3607,0.3456,14.1226,0.9205,-0.3352,0.6732,0.9962,44.8375
+naringenin,Naringenin,flavonoid,130.0,17.0,13.0742,1.3003,0.3456,18.7777,0.9053,-0.4634,0.7214,0.9962,42.4474
+naringin,Naringin,flavonoid,51.0,7.0,5.1291,1.3648,0.422,7.7965,0.8978,-0.3166,0.6831,0.9962,41.2046
+Butyric Acid,Butyrate,short-chain fatty acid,172.0,21.0,17.2982,1.214,0.4149,23.521,0.8928,-0.5805,0.7486,0.9962,40.4398
+Caffeine,Caffeine,methylxanthine,2860.0,267.0,287.6329,0.9283,0.9364,303.6034,0.8794,-2.6564,0.9962,0.9962,38.3365
+Catechin,Catechin,flavonoid,505.0,47.0,50.7883,0.9254,0.833,55.8649,0.8413,-1.3032,0.9189,0.9962,32.696
+Lycopene,Lycopene (tomato),carotenoid,69.0,8.0,6.9394,1.1528,0.5735,9.7087,0.824,-0.604,0.7745,0.9962,30.8795
+piperine,Piperine (pepper),spice compound,32.0,4.0,3.2183,1.2429,0.5735,4.8606,0.8229,-0.4293,0.7448,0.9962,30.4971
+Luteolin,Luteolin,flavonoid,122.0,15.0,12.2697,1.2225,0.422,18.3211,0.8187,-0.8824,0.8438,0.9962,29.6367
+alpha-Tocopherol,α-Tocopherol (vit. E),vitamin,66.0,8.0,6.6377,1.2052,0.5222,9.9231,0.8062,-0.6794,0.8029,0.9962,28.2027
+pterostilbene,Pterostilbene,stilbene,93.0,11.0,9.3531,1.1761,0.5214,13.8043,0.7969,-0.8462,0.8408,0.9962,27.5335
+nobiletin,Nobiletin,flavonoid,141.0,13.0,14.1805,0.9168,0.833,17.074,0.7614,-1.0696,0.8918,0.9962,23.2314
+Gallic Acid,Gallic acid,phenolic acid,404.0,33.0,40.6307,0.8122,0.9364,45.2624,0.7291,-1.9945,0.9828,0.9962,20.3633
+Cholecalciferol,Vitamin D3,vitamin,50.0,5.0,5.0285,0.9943,0.7899,7.4893,0.6676,-1.0045,0.8944,0.9962,15.4876
+cinnamaldehyde,Cinnamaldehyde,spice compound,155.0,14.0,15.5885,0.8981,0.833,21.1211,0.6628,-1.7319,0.9722,0.9962,15.1052
+myricetin,Myricetin,flavonoid,54.0,5.0,5.4308,0.9207,0.833,8.0073,0.6244,-1.1735,0.9237,0.9962,12.7151
+caffeic acid,Caffeic acid,phenolic acid,47.0,4.0,4.7268,0.8462,0.833,6.4267,0.6224,-1.0435,0.9013,0.9962,12.5239
+chrysin,Chrysin,flavonoid,86.0,8.0,8.6491,0.925,0.833,12.9311,0.6187,-1.5365,0.9636,0.9962,12.4283
+Ellagic Acid,Ellagic acid,phenolic acid,76.0,6.0,7.6434,0.785,0.8682,10.3125,0.5818,-1.4716,0.9589,0.9962,9.9426
+Rutin,Rutin,flavonoid,37.0,3.0,3.7211,0.8062,0.833,5.6435,0.5316,-1.2268,0.9398,0.9962,7.3614
+Apigenin,Apigenin,flavonoid,90.0,7.0,9.0514,0.7734,0.8728,13.4624,0.52,-1.9754,0.988,0.9962,6.7878
+Eicosapentaenoic Acid,EPA (omega-3),fatty acid,32.0,2.0,3.2183,0.6215,0.8867,4.7755,0.4188,-1.3931,0.9634,0.9962,3.6329

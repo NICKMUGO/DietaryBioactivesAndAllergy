@@ -1,0 +1,54 @@
+dataset,gene,log2FC,FDR
+AR/asthma nasal (child),POSTN,3.43,0.00848
+AR/asthma nasal (child),SERPINB2,1.59,0.0413
+AR/asthma nasal (child),CST1,6.65,2.68e-09
+AR/asthma nasal (child),CCL26,1.02,0.0685
+AR/asthma nasal (child),ALOX15,0.74,0.0247
+AR/asthma nasal (child),CPA3,2.13,0.0247
+AR/asthma nasal (child),CLC,1.55,0.0247
+AR/asthma nasal (child),CCL17,0.08,0.688
+Asthma nasal,POSTN,1.9,0.00654
+Asthma nasal,SERPINB2,0.3,0.692
+Asthma nasal,CST1,3.0,0.00675
+Asthma nasal,CCL26,1.58,0.0175
+Asthma nasal,ALOX15,0.31,0.204
+Asthma nasal,CPA3,3.85,1.32e-06
+Asthma nasal,CLC,0.92,0.105
+Asthma bronchial,POSTN,1.38,0.00143
+Asthma bronchial,CLCA1,2.7,0.000118
+Asthma bronchial,SERPINB2,1.71,9.77e-05
+Asthma bronchial,CST1,1.74,0.00133
+Asthma bronchial,CCL26,0.6,0.0181
+Asthma bronchial,ALOX15,0.38,0.00576
+Asthma bronchial,CPA3,2.51,8.3e-06
+Asthma bronchial,CLC,0.78,0.00442
+Asthma bronchial,CCL17,0.05,0.679
+CRSwNP polyp (array),POSTN,2.43,0.0159
+CRSwNP polyp (array),CLCA1,2.07,0.342
+CRSwNP polyp (array),SERPINB2,2.6,0.0661
+CRSwNP polyp (array),CST1,2.67,0.318
+CRSwNP polyp (array),CCL26,2.88,0.149
+CRSwNP polyp (array),ALOX15,0.83,0.376
+CRSwNP polyp (array),CPA3,2.64,0.00638
+CRSwNP polyp (array),CLC,5.72,0.00798
+CRSwNP polyp (array),IL1RL1,3.68,0.0172
+CRSwNP polyp (array),CCL17,0.64,0.53
+Atopic dermatitis skin,POSTN,-0.13,0.598
+Atopic dermatitis skin,SERPINB2,-1.81,0.00294
+Atopic dermatitis skin,CCL26,3.48,5.23e-05
+Atopic dermatitis skin,ALOX15,0.27,0.125
+Atopic dermatitis skin,CPA3,-1.6,0.142
+Atopic dermatitis skin,IL1RL1,0.25,0.404
+Atopic dermatitis skin,CCL17,2.22,0.00654
+CRSwNP polyp (RNA-seq),POSTN,2.08,5.09e-07
+CRSwNP polyp (RNA-seq),SERPINB2,0.29,0.523
+CRSwNP polyp (RNA-seq),ALOX15,2.02,0.000263
+CRSwNP polyp (RNA-seq),CPA3,1.85,6.5e-07
+Eosinophilic oesophagitis,POSTN,6.65,1.36e-06
+Eosinophilic oesophagitis,SERPINB2,1.16,0.000279
+Eosinophilic oesophagitis,CCL26,7.91,1.17e-09
+Eosinophilic oesophagitis,ALOX15,7.52,6.56e-07
+Eosinophilic oesophagitis,CPA3,5.25,4.85e-07
+Eosinophilic oesophagitis,CLC,3.27,2.31e-05
+Eosinophilic oesophagitis,IL1RL1,1.63,7.17e-05
+Eosinophilic oesophagitis,CCL17,-0.85,0.00306
