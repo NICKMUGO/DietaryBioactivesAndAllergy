@@ -1203,3 +1203,133 @@ validation.round(4)
 #   (*IL4*, *IL5*, *IL13*) that are made by rare cells and are below detection in bulk tissue. Susceptibility genes and
 #   genes whose *expression* changes in tissue are different things. Our signature is validated by the type-2
 #   positive controls (5a) and pathway biology instead, but this result shows the limits of curated-gene validation.
+
+# %% [markdown]
+# ### 6c. Compound–gene network (NetworkX)
+# Bipartite network: the 44 bioactives and the signature genes they target in CTD. Edges are coloured by whether the
+# compound's reported effect *opposes* (reversal) or *matches* the disease direction. We ask which signature genes are
+# network hubs (targeted by many compounds), whether those hubs are reversed or reinforced, and which compounds
+# cluster together (projection onto compounds, Jaccard similarity of their signature targets, greedy modularity
+# communities).
+
+# %%
+sig_set = set(SIG.index)
+B = nx.Graph()
+for c in BIOACTIVES:
+    B.add_node(c, kind="compound", label=BIOACTIVES[c][0], cls=BIOACTIVES[c][1])
+dir_lookup = direc.set_index(["ChemicalName", "GeneSymbol"]).d
+for c in BIOACTIVES:
+    for i in chem_targets_U[c]:
+        g = U[i]
+        if g in sig_set:
+            if g not in B:
+                B.add_node(g, kind="gene", dir=int(dis_dir[g]))
+            d_ = dir_lookup.get((c, g), 0)
+            eff = "none" if d_ == 0 else ("reverses" if d_ == -dis_dir[g] else "reinforces")
+            B.add_edge(c, g, effect=eff)
+genes_B = [n for n, a in B.nodes(data=True) if a["kind"] == "gene"]
+deg_gene = pd.Series({g: B.degree(g) for g in genes_B}).sort_values(ascending=False)
+eff_counts = pd.DataFrame({g: Counter(B.edges[c, g]["effect"] for c in B.neighbors(g)) for g in genes_B}).T.fillna(0)
+hubs = pd.DataFrame({"n_compounds": deg_gene, "allergy_dir": [("up" if dis_dir[g] > 0 else "down") for g in deg_gene.index]})
+hubs = hubs.join(eff_counts).fillna(0).astype({"n_compounds": int})
+for col in ["reverses", "reinforces", "none"]:
+    if col not in hubs:
+        hubs[col] = 0
+print(f"bipartite network: {len(BIOACTIVES)} compounds, {len(genes_B)} signature genes, {B.number_of_edges()} edges")
+print(f"edges with direction: reverses {sum(1 for *_, e in B.edges(data='effect') if e == 'reverses')}, "
+      f"reinforces {sum(1 for *_, e in B.edges(data='effect') if e == 'reinforces')}")
+
+P = nx.Graph()
+comp = [c for c in BIOACTIVES if B.degree(c) > 0]
+for i, a in enumerate(comp):
+    for b_ in comp[i + 1:]:
+        na, nb = set(B.neighbors(a)), set(B.neighbors(b_))
+        j = len(na & nb) / len(na | nb)
+        if j > 0.08:
+            P.add_edge(a, b_, weight=j)
+communities = list(nx.algorithms.community.greedy_modularity_communities(P, weight="weight"))
+comm_of = {c: k for k, cs in enumerate(communities) for c in cs}
+betw = nx.betweenness_centrality(P, weight=None)
+print(f"compound projection: {P.number_of_nodes()} compounds, {P.number_of_edges()} edges (Jaccard>0.08), "
+      f"{len(communities)} communities")
+for k, cs in enumerate(communities):
+    print(f"  community {k + 1}: " + ", ".join(BIOACTIVES[c][0] for c in sorted(cs, key=lambda c: -B.degree(c))))
+hubs.head(20)
+
+# %%
+top_genes = list(deg_gene.index[:35])
+top_comp = sorted({c for g in top_genes for c in B.neighbors(g)}, key=lambda c: -B.degree(c))[:22]
+H = B.subgraph(top_genes + top_comp).copy()
+pos = nx.spring_layout(H, seed=SEED, k=0.55, iterations=300)
+fig, axes = plt.subplots(1, 2, figsize=(16, 7.5), gridspec_kw={"width_ratios": [1.5, 1]})
+ax = axes[0]
+ecol = {"reverses": C_AQUA, "reinforces": C_ORANGE, "none": "#d4d3cc"}
+for eff in ["none", "reinforces", "reverses"]:
+    el = [(u, v) for u, v, e in H.edges(data="effect") if e == eff]
+    nx.draw_networkx_edges(H, pos, edgelist=el, edge_color=ecol[eff], width=0.9 if eff != "none" else 0.5, ax=ax, alpha=0.9)
+gn = [n for n in H if H.nodes[n]["kind"] == "gene"]
+nx.draw_networkx_nodes(H, pos, nodelist=gn, node_size=[30 + 18 * B.degree(n) for n in gn],
+                       node_color=[C_DIS if H.nodes[n]["dir"] > 0 else C_CTRL for n in gn], edgecolors="white", linewidths=0.8, ax=ax)
+nx.draw_networkx_nodes(H, pos, nodelist=top_comp, node_shape="s", node_size=140, node_color="#52514e", edgecolors="white", ax=ax)
+nx.draw_networkx_labels(H, pos, labels={n: n for n in gn}, font_size=6, ax=ax)
+nx.draw_networkx_labels(H, pos, labels={c: BIOACTIVES[c][0].split(" (")[0] for c in top_comp}, font_size=6.5,
+                        font_weight="bold", ax=ax, verticalalignment="bottom")
+ax.plot([], [], color=C_AQUA, label="compound reverses disease direction"); ax.plot([], [], color=C_ORANGE, label="compound reinforces disease direction")
+ax.plot([], [], color="#d4d3cc", label="interaction without direction")
+ax.scatter([], [], c=C_DIS, label="gene up in allergy"); ax.scatter([], [], c=C_CTRL, label="gene down in allergy")
+ax.scatter([], [], c="#52514e", marker="s", label="dietary compound")
+ax.legend(fontsize=7, loc="lower left"); ax.axis("off")
+ax.set_title("Hub signature genes (35 most-targeted) and their dietary compounds")
+ax = axes[1]
+hh = hubs.head(20).iloc[::-1]
+yy = np.arange(len(hh))
+ax.barh(yy, hh.reverses, color=C_AQUA, height=0.7, label="reverses")
+ax.barh(yy, hh.reinforces, left=hh.reverses, color=C_ORANGE, height=0.7, label="reinforces")
+ax.barh(yy, hh.none, left=hh.reverses + hh.reinforces, color="#d4d3cc", height=0.7, label="no direction")
+ax.set_yticks(yy, [f"{g} ({d})" for g, d in zip(hh.index, hh.allergy_dir)], fontsize=7); ax.grid(axis="y", visible=False)
+ax.set(xlabel="number of dietary compounds targeting the gene", title="Top hub genes: reversed or reinforced?")
+ax.legend(fontsize=7, loc="lower right")
+fig.tight_layout()
+savefig(fig, "network_bioactives")
+
+DASH["network"] = {
+    "nodes": [{"id": n, "kind": H.nodes[n]["kind"], "label": BIOACTIVES[n][0] if n in BIOACTIVES else n,
+               "dir": H.nodes[n].get("dir", 0), "degree": B.degree(n),
+               "x": round(float(pos[n][0]), 4), "y": round(float(pos[n][1]), 4)} for n in H],
+    "edges": [{"s": u, "t": v, "e": e} for u, v, e in H.edges(data="effect")],
+    "hubs": hubs.head(30).reset_index(names="gene").to_dict(orient="records"),
+    "communities": [[BIOACTIVES[c][0] for c in sorted(cs, key=lambda c: -B.degree(c))] for cs in communities],
+}
+
+# %% [markdown]
+# **Interpretation.** About 70 % of the 1,177 signature genes (823) are targets of at least one of the 44 compounds,
+# which shows how saturated curated chemical data are. The hubs are not specific allergy genes but stress, apoptosis and
+# proliferation genes studied in cancer pharmacology: *BAX* (36 compounds), *NFE2L2/NRF2* (32), *MMP9*, *CCND1*, *CCNB1*.
+# Edge directions show what drives the null reversal result:
+# * Compounds **reverse** the proliferation and remodelling genes (*CCNB1*, *CCNA2*, *MMP9* are up in allergy and
+#   compounds decrease them, the usual anti-proliferative effect in tumour cells);
+# * but they **reinforce** *BAX*, *NFE2L2* and *CCND1*. *NFE2L2* (NRF2) is up in allergic tissue as an adaptive
+#   antioxidant response, and dietary electrophiles (sulforaphane, curcumin, quercetin) activate it further. That
+#   "reinforcement" is probably **beneficial**, which exposes a flaw in the simple reversal hypothesis (H3): not every
+#   change in disease tissue is pathogenic, some are compensatory.
+#
+# The compound projection forms three communities that follow **how heavily each compound has been studied**, not its
+# chemistry: one holds the "big five" (quercetin, resveratrol, genistein, EGCG, caffeine) with curcumin, sulforaphane
+# and vitamin C; one holds mostly lipids, carotenoids and vitamins (DHA, EPA, vitamin D3, lycopene, α-tocopherol) with
+# small, metabolic target sets; the third holds the remaining flavonoids and spice compounds.
+#
+# ### 6d. Literature comparison
+# * **Sulforaphane** (the single positive finding) activates NRF2 and phase-II antioxidant genes in human upper-airway
+#   cells (Riedl et al., *Clin Immunol* 2009). In a small human trial, broccoli-sprout sulforaphane reduced the nasal
+#   allergic inflammatory response to diesel particles (Heber et al., *Food Funct* 2014). Our result is consistent with
+#   – but much weaker than – this literature: a modest 1.27-fold, degree-adjusted overlap, with no net reversal.
+# * **Curcumin** and **EGCG** show the highest (non-significant) reversal; small trials report symptom benefit of
+#   curcumin in allergic rhinitis (Wu & Xiao, *Eur Arch Otorhinolaryngol* 2016). Worth a targeted follow-up.
+# * **Vitamin D** and **omega-3 fatty acids** have the largest clinical trials in asthma/allergy prevention (e.g. VIDA,
+#   Castro et al. *JAMA* 2014, no benefit for treatment failure; fish oil in pregnancy and childhood wheeze, Bisgaard et
+#   al. *NEJM* 2016). Their CTD target sets are small and not enriched here – their proposed effects are systemic
+#   (immune development, receptor signalling) rather than direct transcriptional effects in the tissue, which a
+#   target-overlap analysis cannot capture.
+# * **Quercetin** is widely promoted as an anti-allergic mast-cell stabiliser, mainly from cell and animal studies. In
+#   curated human gene data we find no enrichment and no reversal, a reminder that *in vitro* mechanistic claims do not
+#   translate automatically to the disease transcriptome.
