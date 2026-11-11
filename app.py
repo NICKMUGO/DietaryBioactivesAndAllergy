@@ -63,19 +63,19 @@ if page == "Overview":
 
 elif page == "Data & QC":
     st.title("Data and quality control")
-    st.dataframe(studies, hide_index=True, use_container_width=True)
+    st.dataframe(studies, hide_index=True, width="stretch")
     fig = go.Figure([go.Bar(y=studies.dataset, x=studies.healthy, name="healthy", orientation="h", marker_color=DOWN),
                      go.Bar(y=studies.dataset, x=studies.allergic, name="allergic", orientation="h", marker_color=UP)])
     fig.update_layout(barmode="group", height=320, xaxis_title="samples after QC", yaxis_autorange="reversed", margin=dict(l=0, r=0, t=10, b=0))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.subheader("QC log")
-    st.dataframe(load("qc"), hide_index=True, use_container_width=True)
+    st.dataframe(load("qc"), hide_index=True, width="stretch")
     st.warning("GSE36830 was on a linear scale (log2 applied). GSE41861 has no sex-chromosome signal (values were adjusted "
                "before deposition). One GSE19187 sample recorded as female expresses Y-chromosome genes.")
     cols = st.columns(2)
     for col, f in zip(cols * 2, ["qc_sex_check", "qc_tissue_markers", "eda_pca", "eda_distributions"]):
         if (FIG / f"{f}.png").exists():
-            col.image(str(FIG / f"{f}.png"), use_container_width=True)
+            col.image(str(FIG / f"{f}.png"), width="stretch")
 
 elif page == "Differential expression":
     st.title("Differential expression per study")
@@ -87,7 +87,7 @@ elif page == "Differential expression":
                      labels={"log2FC": "log2 fold change (allergic − healthy)", "neglog10p": "−log10 p"})
     fig.add_vline(x=0.5, line_dash="dash", line_color="gray"); fig.add_vline(x=-0.5, line_dash="dash", line_color="gray")
     fig.update_traces(marker_size=5); fig.update_layout(height=480)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     row = studies.set_index("dataset").loc[ds]
     st.caption(f"{row.up} genes up, {row.down} down (FDR < 0.05, |log2FC| ≥ 0.5). All DEGs shown plus 1,500 sampled non-significant genes.")
     st.subheader("Positive-control type-2 genes")
@@ -95,7 +95,7 @@ elif page == "Differential expression":
     fig = px.imshow(pc, color_continuous_scale="RdBu_r", color_continuous_midpoint=0, text_auto=".1f", aspect="auto",
                     labels=dict(color="log2FC"))
     fig.update_layout(height=380)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.caption(f"{metric('posctrl_up')} of {metric('posctrl_measured')} measured results significantly up, {metric('posctrl_down')} down.")
 
 elif page == "Consensus signature":
@@ -108,10 +108,10 @@ elif page == "Consensus signature":
     fig = px.imshow(mat, color_continuous_scale="RdBu_r", color_continuous_midpoint=0, zmin=-3, zmax=3, aspect="auto",
                     labels=dict(color="log2FC"))
     fig.update_layout(height=820)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     q = st.text_input("Find a gene (top 300 signature genes)", "").strip().upper()
     sig = load("signature")
-    st.dataframe(sig[sig.gene.str.upper().str.contains(q)] if q else sig, hide_index=True, use_container_width=True)
+    st.dataframe(sig[sig.gene.str.upper().str.contains(q)] if q else sig, hide_index=True, width="stretch")
     st.subheader("Stability when one study is left out")
     st.dataframe(load("stability"), hide_index=True)
 
@@ -132,19 +132,19 @@ elif page == "Bioactive enrichment":
                              hovertemplate="%{y}<br>FE %{x:.2f}<br>targets %{customdata[0]}, overlap %{customdata[1]}<br>FDR %{customdata[2]:.3f}"))
     fig.add_vline(x=1, line_color="black")
     fig.update_layout(height=900, xaxis_title="fold enrichment (green = degree-matched FDR < 0.05)")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     c1, c2 = st.columns(2)
     db = load("degbins")
     c1.plotly_chart(px.bar(db, x="decile", y="signature_pct", hover_data=["degree_range", "genes", "signature_genes"],
                            labels={"signature_pct": "% signature genes", "decile": "CTD degree decile (10 = most studied)"},
-                           color_discrete_sequence=[UP], title="The confounder"), use_container_width=True)
+                           color_discrete_sequence=[UP], title="The confounder"), width="stretch")
     ch = load("chemicals")
     fig = px.scatter(ch, x="n_targets", y="log2FE", color="group", hover_name="compound", log_x=True,
                      color_discrete_map={"Dietary bioactive": GOOD, "Other CTD chemical": MUTED},
                      title=f"Dietary vs other chemicals (Mann–Whitney p = {metric('mw_p')})")
     fig.add_hline(y=0, line_color="black")
-    c2.plotly_chart(fig, use_container_width=True)
-    st.dataframe(load("enrichment"), hide_index=True, use_container_width=True)
+    c2.plotly_chart(fig, width="stretch")
+    st.dataframe(load("enrichment"), hide_index=True, width="stretch")
 
 elif page == "Direction of effect":
     st.title("Do compounds push signature genes against the disease?")
@@ -155,10 +155,10 @@ elif page == "Direction of effect":
                                 marker=dict(symbol="line-ns-open", size=18, color="black", line_width=3))])
     fig.add_vline(x=0.5, line_dash="dash")
     fig.update_layout(height=520, xaxis=dict(range=[0, 1], tickformat=".0%", title="share of directional signature targets reversed"))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.write(f"Pooled: {metric('rev_pct')}% reversed vs {metric('rev_expected_pct')}% expected; "
              f"{metric('rev_n_sig')} of {metric('rev_n_compounds')} compounds significant.")
-    st.dataframe(load("reversal"), hide_index=True, use_container_width=True)
+    st.dataframe(load("reversal"), hide_index=True, width="stretch")
 
 elif page == "Pathways":
     st.title("Reactome pathway enrichment")
@@ -169,9 +169,9 @@ elif page == "Pathways":
                  color_discrete_sequence=[UP if gs.startswith("Up") else DOWN if gs.startswith("Down") else GOOD])
     fig.add_vline(x=-np.log10(0.05), line_dash="dash")
     fig.update_layout(height=560, xaxis_title="−log10 FDR", yaxis_title="")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.subheader("External check: CTD curated disease genes")
-    st.dataframe(load("validation"), hide_index=True, use_container_width=True)
+    st.dataframe(load("validation"), hide_index=True, width="stretch")
     st.caption("Negative result: curated allergy genes are mostly susceptibility loci and T-cell cytokines barely expressed in bulk tissue.")
 
 elif page == "Network":
@@ -193,12 +193,12 @@ elif page == "Network":
     fig.add_trace(go.Scatter(x=c.x, y=c.y, mode="markers+text", text=c.label.str.split(" \\(").str[0], textposition="bottom center",
                              name="compound", marker=dict(symbol="square", size=11, color="#52514e"), hoverinfo="text", hovertext=c.label))
     fig.update_layout(height=760, xaxis_visible=False, yaxis_visible=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     h = load("hubs").head(20)
     fig = px.bar(h, y="gene", x=["reverses", "reinforces", "none"], orientation="h",
                  color_discrete_map={"reverses": GOOD, "reinforces": WARN, "none": MUTED}, title="Top hub genes: reversed or reinforced?")
     fig.update_layout(height=560, yaxis_autorange="reversed", xaxis_title="dietary compounds targeting the gene")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 elif page == "Machine learning":
     st.title("Classifying allergic vs healthy samples")
@@ -208,7 +208,7 @@ elif page == "Machine learning":
     fig = px.scatter(w[w.features.isin(keep)], x="AUROC", y="dataset", color="features", error_x="AUROC_sd",
                      category_orders={"dataset": DSN}, hover_data=["n_genes", "balanced_acc", "perm_p"])
     fig.update_traces(marker_size=11); fig.update_layout(height=520, xaxis_range=[0.4, 1.05])
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.write(f"Hub targets ({metric('n_hub')} genes hit by ≥ 4 bioactives) beat {metric('hub_pct_random')}% of random gene sets of the same size on average.")
     st.subheader("Leave one study out")
     lo = load("ml_lodo")
@@ -218,7 +218,7 @@ elif page == "Machine learning":
     fig = px.bar(lo, x="AUROC", y="dataset", color="model", barmode="group", orientation="h",
                  color_discrete_map={"LR on hub targets": UP, "LR on random genes": MUTED, "Signature score (no training)": DOWN})
     fig.add_vline(x=0.5, line_dash="dash"); fig.update_layout(height=520, xaxis_range=[0, 1])
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
     st.write(f"Mean held-out AUROC: hub targets {metric('lodo_hub')}, random genes {metric('lodo_random')} "
              f"(p = {metric('lodo_p')}), untrained signature score {metric('lodo_sig')}.")
 
