@@ -625,3 +625,66 @@ savefig(fig, "eda_ctd")
 # hypergeometric test would find "enrichment" for almost any chemical. **This is the key confounder the
 # core analysis must correct for** (degree-matched null). Bioactive target-set sizes span two orders of
 # magnitude (resveratrol and quercetin ≈ thousands; hesperetin ≈ 60), so we use size-aware statistics.
+
+# %% [markdown]
+# ## Stage 5 – Core analysis
+#
+# ### 5a. Differential expression in each study (O1)
+#
+# For each contrast we fit a two-group linear model per gene and use **empirical-Bayes moderated
+# t-statistics** (the limma method of Smyth 2004, implemented below in NumPy/SciPy so the notebook needs no R).
+# Moderation borrows information across genes to stabilise variance estimates, which matters for the small
+# studies. P-values are corrected with **Benjamini–Hochberg FDR** within each study. A gene is called a
+# DEG at FDR < 0.05 and |log2FC| ≥ 0.5 (≥ 1.41-fold). For RNA-seq this is the "limma-trend" approach on
+# log-CPM values.
+
+# %%
+def trigamma_inverse(x):
+    y = 0.5 + 1.0 / x
+    for _ in range(50):
+        tri = special.polygamma(1, y)
+        dif = tri * (1 - tri / x) / special.polygamma(2, y)
+        y = y + dif
+        if np.all(np.abs(-dif / y) < 1e-8):
+            break
+    return y
+
+def moderated_t(x, label):
+    lab = np.asarray(label).astype(bool)
+    a, b = x.values[:, lab], x.values[:, ~lab]
+    n1, n0 = a.shape[1], b.shape[1]
+    lfc = a.mean(1) - b.mean(1)
+    dg = n1 + n0 - 2
+    s2 = ((a.var(1, ddof=1) * (n1 - 1)) + (b.var(1, ddof=1) * (n0 - 1))) / dg
+    s2 = np.maximum(s2, 1e-8)
+    z = np.log(s2)
+    e = z - special.digamma(dg / 2) + np.log(dg / 2)
+    emean, evar = e.mean(), e.var(ddof=1) - special.polygamma(1, dg / 2)
+    if evar > 0:
+        d0 = 2 * trigamma_inverse(evar)
+        s02 = np.exp(emean + special.digamma(d0 / 2) - np.log(d0 / 2))
+    else:
+        d0, s02 = np.inf, np.exp(emean)
+    s2post = s2 if np.isinf(d0) else (d0 * s02 + dg * s2) / (d0 + dg)
+    df = dg + (0 if np.isinf(d0) else d0)
+    t = lfc / np.sqrt(s2post * (1 / n1 + 1 / n0))
+    p = 2 * stats.t.sf(np.abs(t), df if np.isfinite(df) else 1e6)
+    res = pd.DataFrame({"log2FC": lfc, "t": t, "p": p, "mean_expr": x.values.mean(1)}, index=x.index)
+    res["FDR"] = multipletests(res.p, method="fdr_bh")[1]
+    return res, dict(d0=float(d0), s02=float(s02), n1=n1, n0=n0)
+
+FDR_T, LFC_T = 0.05, 0.5
+de = {}
+de_rows = []
+for name, d in datasets.items():
+    x = d["expr"]; lab = d["label"].loc[x.columns]
+    r, prior = moderated_t(x, lab)
+    r["DEG"] = np.where((r.FDR < FDR_T) & (r.log2FC >= LFC_T), "up",
+                np.where((r.FDR < FDR_T) & (r.log2FC <= -LFC_T), "down", "ns"))
+    de[name] = r
+    r.to_csv(RES / f"DE_{re.sub('[^A-Za-z0-9]+', '_', name)}.csv")
+    de_rows.append({"dataset": name, "genes tested": len(r), "n allergic": prior["n1"], "n healthy": prior["n0"],
+                    "prior df d0": round(prior["d0"], 1), "up": int((r.DEG == "up").sum()),
+                    "down": int((r.DEG == "down").sum()), "min FDR": f"{r.FDR.min():.1e}"})
+de_summary = pd.DataFrame(de_rows)
+de_summary
