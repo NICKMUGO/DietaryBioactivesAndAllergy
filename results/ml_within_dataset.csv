@@ -1,0 +1,50 @@
+dataset,features,n_genes,AUROC,AUROC_sd,balanced_acc,perm_p,pct_beats_random
+AR/asthma nasal (child),Bioactive hub targets,970,0.8246666666666665,0.1279861103575089,0.7273333333333334,0.019801980198019802,93.33333333333333
+AR/asthma nasal (child),Random genes (same size as hub set),970,0.7907777777777779,0.0256173166740829,,,
+AR/asthma nasal (child),Bioactive-targeted signature (LOO),860,0.8286666666666668,0.135443305072229,0.7233333333333334,,100.0
+AR/asthma nasal (child),Random genes (same size as signature set),860,0.7978888888888889,0.019431424212177,,,
+AR/asthma nasal (child),Bioactive hub targets – random forest,970,0.7983333333333335,0.1430714662133734,0.5466666666666666,,
+AR/asthma nasal (child),All genes + in-fold top-100,15228,0.8873333333333335,0.10244564954702133,0.7959999999999999,,
+AR/asthma nasal (child),Majority class,0,0.5,0.0,0.5,,
+Asthma nasal,Bioactive hub targets,928,0.9129166666666667,0.09142392101268318,0.8308333333333333,0.009900990099009901,73.33333333333333
+Asthma nasal,Random genes (same size as hub set),928,0.8993749999999999,0.011529451016450896,,,
+Asthma nasal,Bioactive-targeted signature (LOO),880,0.9395833333333334,0.06298423524096239,0.87,,100.0
+Asthma nasal,Random genes (same size as signature set),880,0.896388888888889,0.015598897950943533,,,
+Asthma nasal,Bioactive hub targets – random forest,928,0.884375,0.09298880794363253,0.7125,,
+Asthma nasal,All genes + in-fold top-100,11834,0.90875,0.0818238283685681,0.8391666666666666,,
+Asthma nasal,Majority class,0,0.5,0.0,0.5,,
+Asthma bronchial,Bioactive hub targets,904,0.9021481481481481,0.05966224090995751,0.7946666666666666,0.009900990099009901,46.666666666666664
+Asthma bronchial,Random genes (same size as hub set),904,0.901679012345679,0.011816975433591698,,,
+Asthma bronchial,Bioactive-targeted signature (LOO),675,0.901111111111111,0.06316525238109659,0.7928888888888889,,40.0
+Asthma bronchial,Random genes (same size as signature set),675,0.9079753086419754,0.02045218884750892,,,
+Asthma bronchial,Bioactive hub targets – random forest,904,0.9281481481481482,0.03736016452057079,0.745,,
+Asthma bronchial,All genes + in-fold top-100,11732,0.8714074074074074,0.07151520985115596,0.7635555555555555,,
+Asthma bronchial,Majority class,0,0.5,0.0,0.5,,
+CRSwNP polyp (array),Bioactive hub targets,849,1.0,0.0,0.92,0.07920792079207921,0.0
+CRSwNP polyp (array),Random genes (same size as hub set),849,1.0,0.0,,,
+CRSwNP polyp (array),Bioactive-targeted signature (LOO),628,1.0,0.0,0.99,,0.0
+CRSwNP polyp (array),Random genes (same size as signature set),628,1.0,0.0,,,
+CRSwNP polyp (array),Bioactive hub targets – random forest,849,1.0,0.0,0.975,,
+CRSwNP polyp (array),All genes + in-fold top-100,16678,1.0,0.0,0.95,,
+CRSwNP polyp (array),Majority class,0,0.5,0.0,0.5,,
+Atopic dermatitis skin,Bioactive hub targets,1006,1.0,0.0,1.0,0.019801980198019802,46.666666666666664
+Atopic dermatitis skin,Random genes (same size as hub set),1006,0.9533333333333334,0.06990734608778278,,,
+Atopic dermatitis skin,Bioactive-targeted signature (LOO),692,1.0,0.0,1.0,,66.66666666666666
+Atopic dermatitis skin,Random genes (same size as signature set),692,0.9466666666666667,0.05089931964909496,,,
+Atopic dermatitis skin,Bioactive hub targets – random forest,1006,1.0,0.0,1.0,,
+Atopic dermatitis skin,All genes + in-fold top-100,15837,1.0,0.0,1.0,,
+Atopic dermatitis skin,Majority class,0,0.5,0.0,0.5,,
+CRSwNP polyp (RNA-seq),Bioactive hub targets,1004,0.9882777777777778,0.02133680527303135,0.9378333333333334,0.009900990099009901,86.66666666666667
+CRSwNP polyp (RNA-seq),Random genes (same size as hub set),1004,0.9854166666666667,0.0034860834438919996,,,
+CRSwNP polyp (RNA-seq),Bioactive-targeted signature (LOO),529,0.9933333333333334,0.011365151414154853,0.9406111111111112,,100.0
+CRSwNP polyp (RNA-seq),Random genes (same size as signature set),529,0.9818981481481482,0.004858509003734447,,,
+CRSwNP polyp (RNA-seq),Bioactive hub targets – random forest,1004,0.9684722222222224,0.033689073951411956,0.8990277777777778,,
+CRSwNP polyp (RNA-seq),All genes + in-fold top-100,16687,0.9832777777777778,0.028876813715684933,0.9390555555555555,,
+CRSwNP polyp (RNA-seq),Majority class,0,0.5,0.0,0.5,,
+Eosinophilic oesophagitis,Bioactive hub targets,935,1.0,0.0,1.0,0.009900990099009901,0.0
+Eosinophilic oesophagitis,Random genes (same size as hub set),935,1.0,0.0,,,
+Eosinophilic oesophagitis,Bioactive-targeted signature (LOO),533,1.0,0.0,1.0,,0.0
+Eosinophilic oesophagitis,Random genes (same size as signature set),533,1.0,0.0,,,
+Eosinophilic oesophagitis,Bioactive hub targets – random forest,935,1.0,0.0,1.0,,
+Eosinophilic oesophagitis,All genes + in-fold top-100,12282,1.0,0.0,1.0,,
+Eosinophilic oesophagitis,Majority class,0,0.5,0.0,0.5,,
