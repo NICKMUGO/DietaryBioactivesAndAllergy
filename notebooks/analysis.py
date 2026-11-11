@@ -593,3 +593,35 @@ DASH["pca"] = pca_store
 # much less of the total variance (|r| with PC1/PC2 is low): inter-individual variation dominates and the
 # disease signal is subtler. This tells us to expect many more DEGs in the tissue studies and to weight
 # evidence across studies rather than by DEG counts.
+
+# %%
+gene_degree = ctd.groupby("GeneSymbol").ChemicalName.nunique()
+chem_size = ctd.groupby("ChemicalName").GeneSymbol.nunique()
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 3.6), gridspec_kw={"width_ratios": [1, 1, 1.4]})
+ax = axes[0]
+ax.hist(np.log10(gene_degree), bins=50, color=C_CTRL, edgecolor="white", lw=0.4)
+ax.set(xlabel="log10(number of chemicals per gene)", ylabel="genes",
+       title=f"CTD gene degree is highly skewed\nmedian {gene_degree.median():.0f}, max {gene_degree.max():,} ({gene_degree.idxmax()})")
+ax = axes[1]
+ax.hist(np.log10(chem_size), bins=50, color=C_MUTED, edgecolor="white", lw=0.4, label="all CTD chemicals")
+for c in BIOACTIVES:
+    ax.axvline(np.log10(chem_size[c]), color=C_AQUA, lw=0.7, alpha=0.8)
+ax.plot([], [], color=C_AQUA, label="dietary bioactives")
+ax.set(xlabel="log10(human target genes per chemical)", ylabel="chemicals", title="Target-set size")
+ax.legend(fontsize=7)
+ax = axes[2]
+bs = bio_targets.rename(index={k: v[0] for k, v in BIOACTIVES.items()}).sort_values()
+ax.barh(bs.index, bs.values, color=C_AQUA, height=0.7)
+ax.set_xscale("log"); ax.tick_params(axis="y", labelsize=6); ax.grid(axis="y", visible=False)
+ax.set(xlabel="human target genes in CTD (log scale)", title="Dietary bioactive panel")
+fig.tight_layout()
+savefig(fig, "eda_ctd")
+
+# %% [markdown]
+# **Interpretation.** CTD knowledge is extremely uneven: a few genes (e.g. *CYP1A1*, *TNF*, *IL6*, *HMOX1*,
+# *CASP3*) have been studied with thousands of chemicals, while most genes have a handful. Inflammatory
+# genes are both the most studied *and* the ones we expect to change in allergy, so a naive
+# hypergeometric test would find "enrichment" for almost any chemical. **This is the key confounder the
+# core analysis must correct for** (degree-matched null). Bioactive target-set sizes span two orders of
+# magnitude (resveratrol and quercetin ≈ thousands; hesperetin ≈ 60), so we use size-aware statistics.
