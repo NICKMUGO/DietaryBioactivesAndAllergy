@@ -137,4 +137,5 @@ metrics = [
     ("n_net_genes", int((pd.DataFrame(n["nodes"]).kind == "gene").sum()), "hub genes drawn in the network"),
 ]
 summary = pd.DataFrame(metrics, columns=["metric", "value", "label"])
+summary["value"] = summary.value.map(lambda v: str(int(v)) if float(v).is_integer() else f"{v:g}")
 save("summary", summary)
