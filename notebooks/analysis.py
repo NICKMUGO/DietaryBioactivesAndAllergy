@@ -517,3 +517,79 @@ savefig(fig, "qc_tissue_markers")
 #   skin; squamous oesophageal keratins (*KRT13/KRT4*) dominate the oesophagus; airway epithelial and
 #   ciliated-cell genes (*SCGB1A1*, *BPIFA1*, *FOXJ1*, *MUC5AC*) are high in nasal and bronchial brushings;
 #   polyp/turbinate tissue shows immune infiltrate (*PTPRC*). The data are what they claim to be.
+
+# %% [markdown]
+# ## Stage 4 – Exploratory data analysis
+
+# %%
+fig, ax = plt.subplots(figsize=(7.5, 3))
+s = summary.set_index("dataset")[["healthy", "allergic"]].copy()
+s["healthy"] = [int((datasets[k]["label"] == 0).sum()) for k in s.index]
+s["allergic"] = [int(datasets[k]["label"].sum()) for k in s.index]
+y = np.arange(len(s))
+ax.barh(y - 0.2, s["healthy"], 0.38, color=C_CTRL, label="healthy")
+ax.barh(y + 0.2, s["allergic"], 0.38, color=C_DIS, label="allergic")
+for yi, (h, a) in enumerate(zip(s["healthy"], s["allergic"])):
+    ax.text(h + 0.5, yi - 0.2, str(h), va="center", fontsize=7, color="#52514e")
+    ax.text(a + 0.5, yi + 0.2, str(a), va="center", fontsize=7, color="#52514e")
+ax.set_yticks(y, s.index); ax.invert_yaxis(); ax.grid(axis="y", visible=False)
+ax.set(xlabel="samples after QC", title="Samples per group, per contrast"); ax.legend(loc="lower right")
+savefig(fig, "eda_sample_counts")
+
+# %%
+fig, axes = plt.subplots(2, 4, figsize=(14, 6))
+for ax, (name, d) in zip(axes.flat, datasets.items()):
+    x = d["expr"]; labl = d["label"].loc[x.columns]
+    order = labl.sort_values().index
+    bp = ax.boxplot(x[order].values, showfliers=False, patch_artist=True, widths=0.7,
+                    medianprops=dict(color=C_INK, lw=0.8), whiskerprops=dict(lw=0.6), capprops=dict(lw=0))
+    for patch, l in zip(bp["boxes"], labl.loc[order]):
+        patch.set(facecolor=C_DIS if l else C_CTRL, edgecolor="white", lw=0.4)
+    ax.set(title=name, xticks=[], ylabel="log2 expression"); ax.grid(axis="x", visible=False)
+ax = axes.flat[-1]
+if "libsize" in datasets["CRSwNP polyp (RNA-seq)"]:
+    d = datasets["CRSwNP polyp (RNA-seq)"]
+    ax.scatter(d["libsize"] / 1e6, d["size_factors"].reindex(d["libsize"].index), s=14, c=C_VIOLET, edgecolor="white", lw=0.5)
+    ax.set(title="GSE136825: library size vs size factor", xlabel="reads (millions)", ylabel="median-of-ratios size factor")
+fig.suptitle("Per-sample expression distributions after normalisation (blue = healthy, red = allergic)", y=1.01)
+fig.tight_layout()
+savefig(fig, "eda_distributions")
+
+# %% [markdown]
+# **Interpretation.** Within each study, per-sample distributions are well aligned after normalisation,
+# with no group-wise shift that would masquerade as differential expression. For the RNA-seq study,
+# size factors track library depth, as expected – depth differences are removed by normalisation.
+
+# %%
+fig, axes = plt.subplots(2, 4, figsize=(14, 6.4))
+pca_store = {}
+for ax, (name, d) in zip(axes.flat, datasets.items()):
+    x = d["expr"]
+    top = x.var(axis=1).sort_values(ascending=False).index[:2000]
+    z = x.loc[top].sub(x.loc[top].mean(axis=1), axis=0).T
+    pca = PCA(n_components=2, random_state=SEED).fit(z)
+    pcs = pca.transform(z)
+    labl = d["label"].loc[x.columns].values
+    for v, colr, lab in [(0, C_CTRL, "healthy"), (1, C_DIS, "allergic")]:
+        ax.scatter(pcs[labl == v, 0], pcs[labl == v, 1], s=22, c=colr, label=lab, edgecolor="white", lw=0.6)
+    r = pca.explained_variance_ratio_
+    rpc = [abs(stats.pointbiserialr(labl, pcs[:, i])[0]) for i in range(2)]
+    ax.set(title=f"{name}\n|r(PC1,disease)|={rpc[0]:.2f}  |r(PC2,disease)|={rpc[1]:.2f}",
+           xlabel=f"PC1 ({r[0]:.0%})", ylabel=f"PC2 ({r[1]:.0%})")
+    pca_store[name] = dict(pc1=pcs[:, 0].round(2).tolist(), pc2=pcs[:, 1].round(2).tolist(),
+                           label=labl.tolist(), var=[round(float(v), 3) for v in r],
+                           samples=list(x.columns), r=[round(float(v), 2) for v in rpc])
+axes.flat[0].legend(fontsize=7)
+axes.flat[-1].axis("off")
+fig.suptitle("PCA of the 2,000 most variable genes in each study", y=1.01)
+fig.tight_layout()
+savefig(fig, "eda_pca")
+DASH["pca"] = pca_store
+
+# %% [markdown]
+# **Interpretation.** Disease status is the dominant source of variation in tissue-level studies with
+# strong inflammation (atopic dermatitis lesional skin, nasal polyps, EoE) – PC1 separates the groups
+# almost completely. In the epithelial-brushing studies (asthma, childhood rhinitis) disease explains
+# much less of the total variance (|r| with PC1/PC2 is low): inter-individual variation dominates and the
+# disease signal is subtler. This tells us to expect many more DEGs in the tissue studies and to weight
+# evidence across studies rather than by DEG counts.
