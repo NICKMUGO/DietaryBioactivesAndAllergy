@@ -837,3 +837,144 @@ DASH["consensus"] = {
 # Down-regulated genes are fewer and smaller in effect (metabolic and nuclear-receptor genes, see 6a). Most signature genes replicate in only 2–3
 # individual studies – expected given the very different tissues – but none rests on a single study by
 # construction. This signature is the reference set for testing the dietary bioactives.
+
+# %% [markdown]
+# ### 5c. Are dietary-bioactive targets enriched in the allergy signature? (O2, H1–H2)
+#
+# **The trap.** In CTD, the most-studied genes (cytokines, stress-response and apoptosis genes) are linked to
+# thousands of chemicals, and the same genes are often inflammatory DEGs. A naive hypergeometric test would make
+# almost *any* chemical look "anti-allergic". We therefore use two baselines:
+#
+# 1. **Degree-matched null (H1).** Genes in the universe are split into 10 bins by CTD degree (number of
+#    chemicals curated against the gene). A compound's null overlap with the signature is the sum, over bins,
+#    of the overlap expected when drawing the same number of target genes *from the same bin*. That sum of
+#    independent hypergeometric variables has an exact mean and variance (→ z-score) and is simulated 20,000 times
+#    for an empirical p-value. Fold enrichment = observed / degree-matched expected overlap.
+# 2. **All other CTD chemicals (H2).** The same degree-adjusted fold enrichment is computed for every CTD
+#    chemical with ≥ 20 targets in the universe. If dietary bioactives are special, they should beat the typical
+#    non-dietary chemical (one-sided Mann–Whitney; plus a regression adjusting for target-set size).
+#
+# Universe = genes in the meta-analysis that have at least one human CTD interaction.
+
+# %%
+U = sorted(set(meta.index) & set(gene_degree.index))
+Uidx = {g: i for i, g in enumerate(U)}
+in_sig = np.isin(U, list(SIG.index))
+deg_U = gene_degree.reindex(U).values
+bins = pd.qcut(pd.Series(deg_U).rank(method="first"), 10, labels=False).values
+N_b = np.bincount(bins, minlength=10)
+K_b = np.bincount(bins, weights=in_sig, minlength=10).astype(int)
+print(f"universe: {len(U):,} genes, of which {in_sig.sum()} signature genes ({in_sig.mean():.1%})")
+deg_by_bin = pd.DataFrame({"degree range": [f"{deg_U[bins==b].min()}–{deg_U[bins==b].max()}" for b in range(10)],
+                           "genes": N_b, "signature genes": K_b, "signature %": (100 * K_b / N_b).round(1)})
+print("Signature genes are concentrated in highly-studied genes:")
+print(deg_by_bin.to_string())
+
+chem_targets_U = (ctd[ctd.GeneSymbol.isin(Uidx)].groupby("ChemicalName").GeneSymbol
+                  .agg(lambda s: np.unique([Uidx[g] for g in s])))
+chem_targets_U = chem_targets_U[chem_targets_U.map(len) >= 20]
+print(f"chemicals with ≥20 targets in the universe: {len(chem_targets_U):,} "
+      f"({sum(c in chem_targets_U.index for c in BIOACTIVES)} of {len(BIOACTIVES)} bioactives)")
+
+def enrichment_stats(idx, n_sim=0):
+    k_b = np.bincount(bins[idx], minlength=10)
+    obs = int(in_sig[idx].sum())
+    p_b = K_b / N_b
+    mean = float((k_b * p_b).sum())
+    var = float((k_b * p_b * (1 - p_b) * (N_b - k_b) / np.maximum(N_b - 1, 1)).sum())
+    M, n, N = len(U), int(in_sig.sum()), len(idx)
+    naive_exp = N * n / M
+    out = dict(n_targets=len(idx), overlap=obs, expected_naive=naive_exp, FE_naive=obs / naive_exp if naive_exp else np.nan,
+               p_naive=stats.hypergeom.sf(obs - 1, M, n, N), expected_degmatched=mean,
+               FE_degmatched=obs / mean if mean > 0 else np.nan, z_degmatched=(obs - mean) / np.sqrt(var) if var > 0 else np.nan)
+    if n_sim:
+        sims = sum(rng.hypergeometric(K_b[b], N_b[b] - K_b[b], k_b[b], size=n_sim) for b in range(10) if k_b[b] > 0)
+        out["p_degmatched"] = (1 + (sims >= obs).sum()) / (n_sim + 1)
+    return out
+
+all_chem = pd.DataFrame({c: enrichment_stats(idx) for c, idx in chem_targets_U.items()}).T
+all_chem["dietary"] = all_chem.index.isin(list(BIOACTIVES))
+all_chem = all_chem.astype({"n_targets": int, "overlap": int, "dietary": bool})
+
+bio = pd.DataFrame({c: enrichment_stats(chem_targets_U[c], n_sim=20000) for c in BIOACTIVES}).T
+bio["FDR_naive"] = multipletests(bio.p_naive.astype(float), method="fdr_bh")[1]
+bio["FDR_degmatched"] = multipletests(bio.p_degmatched.astype(float), method="fdr_bh")[1]
+bio.insert(0, "compound", [BIOACTIVES[c][0] for c in bio.index])
+bio.insert(1, "class", [BIOACTIVES[c][1] for c in bio.index])
+bio = bio.sort_values("FE_degmatched", ascending=False)
+bio.to_csv(RES / "bioactive_enrichment.csv")
+print(f"\nbioactives enriched at FDR<0.05 — naive test: {(bio.FDR_naive < 0.05).sum()}/{len(bio)};"
+      f" degree-matched test: {(bio.FDR_degmatched < 0.05).sum()}/{len(bio)}")
+bio[["compound", "class", "n_targets", "overlap", "expected_naive", "FE_naive", "FDR_naive",
+     "expected_degmatched", "FE_degmatched", "z_degmatched", "FDR_degmatched"]].round(3)
+
+# %%
+cmp_ = all_chem.copy()
+cmp_["log2FE"] = np.log2(cmp_.FE_degmatched.astype(float).clip(lower=1 / 16))
+cmp_["log_size"] = np.log10(cmp_.n_targets)
+lo, hi = cmp_.loc[cmp_.dietary, "n_targets"].min(), cmp_.loc[cmp_.dietary, "n_targets"].max()
+size_matched = cmp_[(cmp_.n_targets >= lo) & (cmp_.n_targets <= hi)]
+diet_fe = size_matched.loc[size_matched.dietary, "log2FE"]
+other_fe = size_matched.loc[~size_matched.dietary, "log2FE"]
+mw = stats.mannwhitneyu(diet_fe, other_fe, alternative="greater")
+import statsmodels.formula.api as smf
+ols = smf.ols("log2FE ~ dietary + log_size", data=size_matched.assign(dietary=size_matched.dietary.astype(int))).fit()
+pct_rank = {c: float((other_fe < cmp_.loc[c, "log2FE"]).mean() * 100) for c in BIOACTIVES}
+print(f"size-matched comparison: {len(diet_fe)} dietary vs {len(other_fe)} other chemicals")
+print(f"median degree-adjusted log2FE: dietary {diet_fe.median():.2f} vs other {other_fe.median():.2f}; "
+      f"Mann–Whitney one-sided p = {mw.pvalue:.3g}")
+print(f"OLS log2FE ~ dietary + log10(size): dietary coef = {ols.params['dietary']:.3f} "
+      f"(95% CI {ols.conf_int().loc['dietary', 0]:.3f} to {ols.conf_int().loc['dietary', 1]:.3f}), p = {ols.pvalues['dietary']:.3g}")
+frac_naive_all = (cmp_.p_naive.astype(float) < 0.05).mean()
+print(f"share of ALL CTD chemicals 'enriched' by the naive test at p<0.05: {frac_naive_all:.0%}")
+
+# %%
+fig, axes = plt.subplots(1, 3, figsize=(15, 5.6), gridspec_kw={"width_ratios": [1.3, 1, 1]})
+ax = axes[0]
+b = bio.sort_values("FE_degmatched")
+yy = np.arange(len(b))
+ax.scatter(b.FE_naive, yy, s=16, facecolor="white", edgecolor=C_MUTED, lw=1, label="naive (no degree matching)", zorder=3)
+sigm = b.FDR_degmatched < 0.05
+ax.scatter(b.FE_degmatched[sigm], yy[sigm], s=22, c=C_AQUA, label="degree-matched, FDR<0.05", zorder=4)
+ax.scatter(b.FE_degmatched[~sigm], yy[~sigm], s=22, c="#c3c2b7", label="degree-matched, n.s.", zorder=4)
+for yi, (a1, a2) in enumerate(zip(b.FE_naive, b.FE_degmatched)):
+    ax.plot([a1, a2], [yi, yi], color="#d4d3cc", lw=0.8, zorder=2)
+ax.axvline(1, color=C_INK, lw=0.8)
+ax.set_yticks(yy, b.compound, fontsize=6.5); ax.grid(axis="y", visible=False)
+ax.set(xlabel="fold enrichment of targets in the allergy signature", title="H1: enrichment per bioactive")
+ax.legend(fontsize=7, loc="lower right")
+ax = axes[1]
+binsh = np.linspace(-3, 3, 31)
+ax.hist(other_fe, bins=binsh, color="#d4d3cc", density=True, label=f"other CTD chemicals (n={len(other_fe)})")
+ax.hist(diet_fe, bins=binsh, color=C_AQUA, histtype="step", lw=2, density=True, label=f"dietary bioactives (n={len(diet_fe)})")
+ax.axvline(other_fe.median(), color=C_MUTED, lw=1.2, ls="--"); ax.axvline(diet_fe.median(), color=C_AQUA, lw=1.2, ls="--")
+ax.set(xlabel="degree-adjusted log2 fold enrichment", ylabel="density",
+       title=f"H2: dietary vs other chemicals\nMann–Whitney one-sided p = {mw.pvalue:.2g}")
+ax.legend(fontsize=7)
+ax = axes[2]
+oth = size_matched[~size_matched.dietary]
+ax.scatter(oth.n_targets, oth.log2FE, s=5, c=C_MUTED, alpha=0.4, linewidths=0, label="other chemicals", rasterized=True)
+dd = size_matched[size_matched.dietary]
+ax.scatter(dd.n_targets, dd.log2FE, s=20, c=C_AQUA, edgecolor="white", lw=0.6, label="dietary bioactives")
+for c in dd.sort_values("log2FE").index[[0, -1, -2, -3]]:
+    ax.annotate(BIOACTIVES[c][0], (dd.loc[c, "n_targets"], dd.loc[c, "log2FE"]), fontsize=6.5, xytext=(3, 2), textcoords="offset points")
+ax.set_xscale("log"); ax.axhline(0, color=C_INK, lw=0.8)
+ax.set(xlabel="targets in universe (log)", ylabel="degree-adjusted log2 FE", title="Enrichment vs target-set size")
+ax.legend(fontsize=7)
+fig.tight_layout()
+savefig(fig, "enrichment_bioactives")
+
+hist_o, edges = np.histogram(other_fe, bins=binsh, density=True)
+hist_d, _ = np.histogram(diet_fe, bins=binsh, density=True)
+DASH["enrichment"] = {
+    "table": bio.reset_index(names="ctd_name")[["ctd_name", "compound", "class", "n_targets", "overlap", "expected_naive", "FE_naive",
+            "FDR_naive", "expected_degmatched", "FE_degmatched", "z_degmatched", "p_degmatched", "FDR_degmatched"]]
+            .assign(pct_rank_vs_other=lambda t: t.ctd_name.map(pct_rank)).round(4).to_dict(orient="records"),
+    "hist": {"edges": edges.round(3).tolist(), "other": hist_o.round(4).tolist(), "dietary": hist_d.round(4).tolist()},
+    "mw_p": float(mw.pvalue), "median_diet": float(diet_fe.median()), "median_other": float(other_fe.median()),
+    "n_other": int(len(other_fe)), "ols_coef": float(ols.params["dietary"]), "ols_p": float(ols.pvalues["dietary"]),
+    "ols_ci": [float(v) for v in ols.conf_int().loc["dietary"]], "frac_naive_all": float(frac_naive_all),
+    "deg_bins": deg_by_bin.to_dict(orient="records"), "n_universe": len(U), "n_sig_in_universe": int(in_sig.sum()),
+    "scatter_other": oth.sample(min(1500, len(oth)), random_state=SEED)[["n_targets", "log2FE"]].round(3).values.tolist(),
+    "scatter_diet": [[int(dd.loc[c, "n_targets"]), round(float(dd.loc[c, "log2FE"]), 3), BIOACTIVES[c][0]] for c in dd.index],
+}
