@@ -1090,3 +1090,61 @@ DASH["reversal"] = {
 #   0.05; curcumin (69 % vs 55 % expected, nominal p ≈ 0.03) and EGCG are the best candidates and the most
 #   plausible leads for follow-up, but not significant after correction. Quercetin – the flavonoid most often
 #   promoted as "anti-allergic" – moves signature genes in the disease direction slightly more often than expected.
+
+# %% [markdown]
+# ## Stage 6 – Biological interpretation (O3)
+#
+# ### 6a. Reactome pathway enrichment
+# Over-representation analysis (hypergeometric test, BH-FDR) of up- and down-regulated signature genes against the
+# meta-analysis universe, using Reactome human pathways with 10–500 genes in the universe. We also test the
+# signature genes that sulforaphane targets – the one compound that passed H1 – to see what biology the overlap is made of.
+
+# %%
+with zipfile.ZipFile(RAW / "reactome" / "ReactomePathways.gmt.zip") as zf:
+    gmt_lines = zf.read(zf.namelist()[0]).decode().splitlines()
+reactome = {}
+for line in gmt_lines:
+    name, pid, *genes = line.split("\t")
+    reactome[(pid, name)] = set(genes)
+universe_set = set(meta.index)
+reactome_u = {k: v & universe_set for k, v in reactome.items()}
+reactome_u = {k: v for k, v in reactome_u.items() if 10 <= len(v) <= 500}
+print(f"Reactome pathways: {len(reactome)} total, {len(reactome_u)} with 10–500 genes in the universe")
+
+def ora(genes, universe=universe_set, sets=reactome_u):
+    genes = set(genes) & universe
+    M, n = len(universe), len(genes)
+    rows = []
+    for (pid, name), s in sets.items():
+        k = len(genes & s)
+        if k < 2:
+            continue
+        rows.append({"pathway": name, "id": pid, "size": len(s), "overlap": k, "expected": len(s) * n / M,
+                     "FE": k / (len(s) * n / M), "p": stats.hypergeom.sf(k - 1, M, len(s), n),
+                     "genes": ", ".join(sorted(genes & s)[:12])})
+    out = pd.DataFrame(rows)
+    out["FDR"] = multipletests(out.p, method="fdr_bh")[1]
+    return out.sort_values("p").reset_index(drop=True)
+
+sulf_targets = {U[i] for i in chem_targets_U["sulforaphane"]}
+ora_sets = {"Up in allergy": SIG_UP, "Down in allergy": SIG_DOWN,
+            "Sulforaphane-targeted signature genes": sulf_targets & set(SIG.index)}
+ora_res = {k: ora(v) for k, v in ora_sets.items()}
+for k, v in ora_res.items():
+    v.to_csv(RES / f"reactome_{re.sub('[^A-Za-z]+', '_', k)}.csv", index=False)
+    print(f"{k}: {len(ora_sets[k] & universe_set)} genes, {int((v.FDR < 0.05).sum())} pathways at FDR<0.05")
+
+fig, axes = plt.subplots(1, 3, figsize=(16, 5.2))
+for ax, (k, v), colr in zip(axes, ora_res.items(), [C_DIS, C_CTRL, C_AQUA]):
+    t = v.head(12).iloc[::-1]
+    ax.barh([p[:55] + ("…" if len(p) > 55 else "") for p in t.pathway], -np.log10(t.FDR), color=colr, height=0.7)
+    ax.axvline(-np.log10(0.05), color=C_INK, lw=0.8, ls="--")
+    for yi, (fe, ov) in enumerate(zip(t.FE, t.overlap)):
+        ax.text(0.05, yi, f"{ov} genes, {fe:.1f}×", va="center", fontsize=6, color="white" if colr != C_AQUA else C_INK)
+    ax.tick_params(axis="y", labelsize=6.5); ax.grid(axis="y", visible=False)
+    ax.set(xlabel="−log10 FDR", title=k)
+fig.suptitle("Reactome over-representation (dashed line: FDR = 0.05)", y=1.0)
+fig.tight_layout()
+savefig(fig, "reactome_enrichment")
+DASH["reactome"] = {k: v.head(20).round(6).to_dict(orient="records") for k, v in ora_res.items()}
+ora_res["Up in allergy"].head(10)[["pathway", "size", "overlap", "FE", "FDR", "genes"]]
