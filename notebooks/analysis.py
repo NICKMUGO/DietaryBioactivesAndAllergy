@@ -266,7 +266,8 @@ add_dataset("Atopic dermatitis skin", collapse_probes(e, annot["GPL570"]), m, la
 _, m = raw["GSE136825"]
 cnt = gse136825_counts.copy()
 cnt["ens"] = cnt["Geneid"].str.split(".").str[0]
-ens2sym = hgnc.dropna(subset=["ensembl_gene_id"]).set_index("ensembl_gene_id")["symbol"]
+ens2sym = (hgnc.dropna(subset=["ensembl_gene_id"]).drop_duplicates("ensembl_gene_id")
+           .set_index("ensembl_gene_id")["symbol"])
 cnt = cnt[cnt.ens.isin(ens2sym.index)]
 cnt["sym"] = ens2sym.loc[cnt.ens].values
 cnt = cnt.drop(columns=["Geneid", "Chr", "Start", "End", "Strand", "Length", "ens"]).groupby("sym").sum()
