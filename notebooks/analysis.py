@@ -295,3 +295,57 @@ summary
 # two Affymetrix arrays and RNA-seq), 5 tissues and 5 allergic conditions; 295 samples enter QC and 291 are analysed
 # (four outliers removed in Stage 3). Group sizes are unbalanced and small in two studies (CRSwNP array 6 vs 6; EoE 10 vs 6),
 # which limits power there and is the reason we combine studies rather than rely on any single one.
+
+# %% [markdown]
+# ### CTD: dietary bioactive panel
+#
+# The panel is defined *a priori* (before looking at any expression result): food-derived
+# compounds (polyphenols, carotenoids, vitamins, fatty acids, isothiocyanates, alkaloids/spice
+# compounds, methylxanthines, a short-chain fatty acid) with ≥ 40 curated human gene interactions
+# in CTD, so that each has enough targets to test. Drugs and non-food herbal toxins (e.g.
+# tretinoin, triptolide, celastrol) are deliberately excluded.
+
+# %%
+CTD_COLS = ["ChemicalName", "ChemicalID", "CasRN", "GeneSymbol", "GeneID", "GeneForms",
+            "Organism", "OrganismID", "Interaction", "InteractionActions", "PubMedIDs"]
+ctd = pd.read_csv(RAW / "ctd" / "CTD_chem_gene_ixns.tsv.gz", sep="\t", comment="#", header=None,
+                  names=CTD_COLS, usecols=["ChemicalName", "ChemicalID", "GeneSymbol", "GeneForms",
+                                           "OrganismID", "InteractionActions", "PubMedIDs"], dtype=str)
+n_all = len(ctd)
+ctd = ctd[ctd.OrganismID == "9606"].dropna(subset=["GeneSymbol"]).drop_duplicates()
+print(f"CTD interactions: {n_all:,} total -> {len(ctd):,} human (after removing duplicates)")
+print(f"human chemicals: {ctd.ChemicalName.nunique():,}; human genes: {ctd.GeneSymbol.nunique():,}")
+
+BIOACTIVES = {
+    "Quercetin": ("Quercetin", "flavonoid"), "kaempferol": ("Kaempferol", "flavonoid"),
+    "Luteolin": ("Luteolin", "flavonoid"), "Apigenin": ("Apigenin", "flavonoid"),
+    "myricetin": ("Myricetin", "flavonoid"), "fisetin": ("Fisetin", "flavonoid"),
+    "chrysin": ("Chrysin", "flavonoid"), "naringenin": ("Naringenin", "flavonoid"),
+    "naringin": ("Naringin", "flavonoid"), "hesperetin": ("Hesperetin", "flavonoid"),
+    "nobiletin": ("Nobiletin", "flavonoid"), "Rutin": ("Rutin", "flavonoid"),
+    "baicalein": ("Baicalein", "flavonoid"), "Catechin": ("Catechin", "flavonoid"),
+    "epigallocatechin gallate": ("EGCG (green tea)", "flavonoid"),
+    "Genistein": ("Genistein (soy)", "isoflavone"), "daidzein": ("Daidzein (soy)", "isoflavone"),
+    "Resveratrol": ("Resveratrol", "stilbene"), "pterostilbene": ("Pterostilbene", "stilbene"),
+    "Curcumin": ("Curcumin (turmeric)", "curcuminoid"),
+    "Ellagic Acid": ("Ellagic acid", "phenolic acid"), "Gallic Acid": ("Gallic acid", "phenolic acid"),
+    "Chlorogenic Acid": ("Chlorogenic acid (coffee)", "phenolic acid"),
+    "caffeic acid": ("Caffeic acid", "phenolic acid"),
+    "sulforaphane": ("Sulforaphane (broccoli)", "isothiocyanate"),
+    "indole-3-carbinol": ("Indole-3-carbinol", "indole"), "3,3'-diindolylmethane": ("DIM", "indole"),
+    "Capsaicin": ("Capsaicin (chili)", "spice compound"), "gingerol": ("Gingerol (ginger)", "spice compound"),
+    "piperine": ("Piperine (pepper)", "spice compound"), "cinnamaldehyde": ("Cinnamaldehyde", "spice compound"),
+    "thymoquinone": ("Thymoquinone (black seed)", "spice compound"), "Eugenol": ("Eugenol (clove)", "spice compound"),
+    "Caffeine": ("Caffeine", "methylxanthine"),
+    "Lycopene": ("Lycopene (tomato)", "carotenoid"), "beta Carotene": ("β-Carotene", "carotenoid"),
+    "Cholecalciferol": ("Vitamin D3", "vitamin"), "Ascorbic Acid": ("Vitamin C", "vitamin"),
+    "alpha-Tocopherol": ("α-Tocopherol (vit. E)", "vitamin"),
+    "Docosahexaenoic Acids": ("DHA (omega-3)", "fatty acid"),
+    "Eicosapentaenoic Acid": ("EPA (omega-3)", "fatty acid"), "Linoleic Acid": ("Linoleic acid", "fatty acid"),
+    "Oleic Acid": ("Oleic acid", "fatty acid"), "Butyric Acid": ("Butyrate", "short-chain fatty acid"),
+}
+present = [c for c in BIOACTIVES if c in set(ctd.ChemicalName)]
+assert len(present) == len(BIOACTIVES), set(BIOACTIVES) - set(present)
+bio_targets = ctd[ctd.ChemicalName.isin(BIOACTIVES)].groupby("ChemicalName").GeneSymbol.nunique()
+print(f"{len(BIOACTIVES)} bioactives; human target genes per compound: "
+      f"median {bio_targets.median():.0f}, range {bio_targets.min()}–{bio_targets.max()}")
