@@ -1148,3 +1148,58 @@ fig.tight_layout()
 savefig(fig, "reactome_enrichment")
 DASH["reactome"] = {k: v.head(20).round(6).to_dict(orient="records") for k, v in ora_res.items()}
 ora_res["Up in allergy"].head(10)[["pathway", "size", "overlap", "FE", "FDR", "genes"]]
+
+# %% [markdown]
+# ### 6b. External validation with CTD curated gene–disease evidence
+# Does our data-driven signature recover genes that experts have curated (from the literature) as markers or
+# mechanisms of allergic disease – and *not* genes of unrelated diseases? We test both the naive and the
+# degree-matched enrichment, because curated disease genes are also well-studied genes.
+
+# %%
+cgd = pd.read_csv(RAW / "ctd" / "CTD_curated_genes_diseases.tsv.gz", sep="\t", comment="#", header=None,
+                  names=["GeneSymbol", "GeneID", "DiseaseName", "DiseaseID", "DirectEvidence", "OmimIDs", "PubMedIDs"], dtype=str)
+DISEASE_SETS = {
+    "Allergic diseases (asthma, AD, AR, hypersensitivity, EoE, polyps, sinusitis)":
+        ["MESH:D001249", "MESH:D003876", "MESH:D065631", "MESH:D006967", "MESH:D006969", "MESH:D057765",
+         "MESH:D009298", "MESH:D012852", "MESH:D005512"],
+    "Asthma": ["MESH:D001249"], "Atopic dermatitis": ["MESH:D003876"],
+    "Negative control: Alzheimer disease": ["MESH:D000544"], "Negative control: Parkinson disease": ["MESH:D010300"],
+    "Negative control: Schizophrenia": ["MESH:D012559"], "Negative control: Type 2 diabetes": ["MESH:D003924"],
+}
+val_rows = []
+for k, ids in DISEASE_SETS.items():
+    genes = set(cgd.loc[cgd.DiseaseID.isin(ids), "GeneSymbol"]) & set(U)
+    idx = np.array([Uidx[g] for g in genes])
+    r = enrichment_stats(idx, n_sim=20000)
+    val_rows.append({"gene set": k, "curated genes in universe": len(genes), "in signature": r["overlap"],
+                     "FE naive": r["FE_naive"], "p naive": r["p_naive"], "FE degree-matched": r["FE_degmatched"],
+                     "p degree-matched": r["p_degmatched"],
+                     "example genes": ", ".join(sorted(genes & set(SIG.index))[:10])})
+validation = pd.DataFrame(val_rows)
+DASH["validation"] = validation.round(5).to_dict(orient="records")
+validation.round(4)
+
+# %% [markdown]
+# **Interpretation.**
+# * **Up-regulated genes** map to immune pathways – immunoregulatory lymphoid/non-lymphoid interactions
+#   (Siglecs, CD1C, CD200R1), *signalling by interleukins* (incl. IL-4/IL-13 targets such as *ALOX15*, *CISH*,
+#   *CCR1/5*, *CSF2RA*), neutrophil degranulation and haemostasis (infiltrating granulocytes, mast cells, platelets) –
+#   plus a strong **mitotic cell-cycle / proliferation** module (*AURKA/B*, *PLK1*, *CCNB1/2*, *FOXM1*) and
+#   mitochondrial translation. This is the textbook picture of type-2 tissue inflammation with epithelial
+#   hyperplasia and immune-cell expansion.
+# * **Down-regulated genes** are enriched for **de novo sphingolipid (ceramide) synthesis** (*DEGS1/2*, *SPTLC3*,
+#   *SPTSSB*), bile-acid/sterol metabolism and nuclear-receptor signalling (*RXRA*, *RORC*, *NR3C2*). Reduced ceramides
+#   are a hallmark of the defective skin barrier in atopic dermatitis, and the strongest asthma GWAS locus
+#   (*ORMDL3*) is a regulator of the same sphingolipid pathway – a biologically meaningful link to barrier dysfunction.
+# * The **sulforaphane overlap** is made mostly of *mitotic cell-cycle* genes (*AURKA*, *PLK1*, *CCNB1*, *CDC20*) plus
+#   arachidonate metabolism (*ALOX5AP*, *HPGDS*, *PTGS1*, *GPX1/4*) and IL-4/IL-13 signalling. The cell-cycle part
+#   reflects that sulforaphane was largely studied as an anti-cancer agent in tumour cell lines; only the eicosanoid /
+#   redox part is specific to allergic biology. So even the one positive enrichment is partly an artefact of *why* the
+#   compound was studied, not evidence of an anti-allergic mechanism.
+# * **External validation – a negative result.** Genes curated in CTD for allergic diseases are **not** enriched in
+#   our signature (14 of 116; fold-enrichment ≈ 1.2 naive, ≈ 0.9 degree-matched; p > 0.25), and neither are the
+#   negative-control diseases. Inspecting the curated list explains why: it consists of genetic-association loci
+#   (*GSDMB*, *IKZF3*, HLA genes, *CDHR3*), xenobiotic genes from toxicology papers (*CYP1A1*, *GSTM1*) and T-cell cytokines
+#   (*IL4*, *IL5*, *IL13*) that are made by rare cells and are below detection in bulk tissue. Susceptibility genes and
+#   genes whose *expression* changes in tissue are different things. Our signature is validated by the type-2
+#   positive controls (5a) and pathway biology instead, but this result shows the limits of curated-gene validation.
