@@ -750,3 +750,90 @@ DASH["de_summary"] = de_summary.to_dict(orient="records")
 # orders of magnitude between studies, mirroring the PCA: inflamed tissue (AD skin, polyps, EoE) gives
 # thousands of DEGs, while epithelial brushings in asthma give tens to hundreds. A DEG count alone is
 # therefore a poor basis for comparing studies, which motivates the meta-analysis below.
+
+# %% [markdown]
+# ### 5b. Consensus cross-tissue allergy signature (O1)
+#
+# For every gene measured in ≥ 5 of the 7 contrasts we combine evidence with a **weighted Stouffer
+# meta-analysis**: each study's moderated-t p-value is converted to a signed z-score and weighted by
+# √(sample size). Combined p-values are BH-corrected. The **consensus signature** is every gene with
+# (i) meta-analysis FDR < 0.01, (ii) the same direction of change in ≥ 75 % of the studies measuring it, and
+# (iii) individually significant (FDR < 0.05) in ≥ 2 studies – so no single strong study can create a
+# signature gene on its own.
+
+# %%
+DSN = list(datasets)
+
+def consensus(names, min_studies=5, fdr=0.01, consist=0.75, min_sig=2):
+    zs = pd.DataFrame({n: np.sign(de[n].t) * stats.norm.isf(de[n].p.clip(lower=1e-300) / 2) for n in names})
+    lfc = pd.DataFrame({n: de[n].log2FC for n in names})
+    sig = pd.DataFrame({n: (de[n].FDR < 0.05) for n in names})
+    w = pd.Series({n: np.sqrt(len(datasets[n]["label"])) for n in names})
+    keep = zs.notna().sum(axis=1) >= min(min_studies, len(names) - 1)
+    zs, lfc, sig = zs[keep], lfc[keep], sig[keep].fillna(False)
+    W = zs.notna() * w
+    Z = (zs.fillna(0) * w).sum(axis=1) / np.sqrt((W ** 2).sum(axis=1))
+    out = pd.DataFrame({"Z": Z, "p": 2 * stats.norm.sf(np.abs(Z)), "n_studies": zs.notna().sum(axis=1),
+                        "mean_log2FC": lfc.mean(axis=1)})
+    out["FDR"] = multipletests(out.p, method="fdr_bh")[1]
+    out["dir"] = np.sign(out.Z).astype(int)
+    agree = (np.sign(lfc).eq(out.dir, axis=0) & lfc.notna()).sum(axis=1)
+    out["frac_same_dir"] = agree / out.n_studies
+    out["n_sig_same_dir"] = (sig & np.sign(lfc).eq(out.dir, axis=0)).sum(axis=1)
+    out["signature"] = (out.FDR < fdr) & (out.frac_same_dir >= consist) & (out.n_sig_same_dir >= min_sig)
+    return out.sort_values("p"), lfc
+
+meta, lfc_mat = consensus(DSN)
+SIG = meta[meta.signature]
+SIG_UP, SIG_DOWN = set(SIG.index[SIG.dir > 0]), set(SIG.index[SIG.dir < 0])
+print(f"genes in meta-analysis universe: {len(meta):,}")
+print(f"consensus signature: {len(SIG)} genes ({len(SIG_UP)} up, {len(SIG_DOWN)} down in allergy)")
+meta.to_csv(RES / "consensus_meta_analysis.csv")
+SIG.head(25)[["Z", "FDR", "mean_log2FC", "n_studies", "frac_same_dir", "n_sig_same_dir"]]
+
+# %%
+top = pd.concat([SIG[SIG.dir > 0].head(25), SIG[SIG.dir < 0].head(15)]).index
+hm = lfc_mat.loc[top, DSN]
+fig, ax = plt.subplots(figsize=(7.5, 9))
+lim = np.nanpercentile(np.abs(hm.values), 97)
+sns.heatmap(hm, cmap=DIVERGING, center=0, vmin=-lim, vmax=lim, mask=hm.isna(), linewidths=0.6, linecolor="white",
+            cbar_kws={"label": "log2 fold change", "shrink": 0.5}, ax=ax)
+ax.set_facecolor("#f9f9f7")
+ax.axhline(25, color=C_INK, lw=1)
+ax.set(title="Top consensus genes: 25 up, 15 down (rows) across the 7 contrasts", xlabel="", ylabel="")
+ax.tick_params(axis="y", labelsize=7); ax.tick_params(axis="x", rotation=40, labelsize=7)
+savefig(fig, "consensus_heatmap")
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 3.2))
+ax = axes[0]
+cnt_up = SIG[SIG.dir > 0].n_sig_same_dir.value_counts().sort_index()
+cnt_dn = SIG[SIG.dir < 0].n_sig_same_dir.value_counts().sort_index()
+idx = sorted(set(cnt_up.index) | set(cnt_dn.index))
+xx = np.arange(len(idx))
+ax.bar(xx - 0.2, cnt_up.reindex(idx, fill_value=0), 0.38, color=C_DIS, label="up in allergy")
+ax.bar(xx + 0.2, cnt_dn.reindex(idx, fill_value=0), 0.38, color=C_CTRL, label="down in allergy")
+ax.set_xticks(xx, idx); ax.grid(axis="x", visible=False)
+ax.set(xlabel="number of studies where the gene is individually significant (same direction)",
+       ylabel="signature genes", title="Replication of signature genes across studies"); ax.legend()
+ax = axes[1]
+ax.hist(meta.Z, bins=120, color=C_MUTED, edgecolor="none")
+ax.hist(SIG.Z, bins=120, color=C_VIOLET, edgecolor="none", label="signature genes")
+ax.set(xlabel="Stouffer Z (allergic vs healthy)", ylabel="genes", title="Meta-analysis Z distribution"); ax.legend()
+fig.tight_layout()
+savefig(fig, "consensus_replication")
+
+DASH["consensus"] = {
+    "n_universe": int(len(meta)), "n_sig": int(len(SIG)), "n_up": len(SIG_UP), "n_down": len(SIG_DOWN),
+    "heatmap": {"genes": list(top), "datasets": DSN, "lfc": hm.round(2).where(hm.notna(), None).values.tolist()},
+    "table": SIG.reset_index(names="gene").head(300)[["gene", "Z", "FDR", "mean_log2FC", "n_studies", "frac_same_dir",
+                                                      "n_sig_same_dir"]].round(4).to_dict(orient="records"),
+}
+
+# %% [markdown]
+# **Interpretation.** The consensus signature is dominated by up-regulated genes, and the top of the list is a
+# who's-who of type-2 and allergic inflammation (e.g. *POSTN*, *SERPINB2*, *CST1*, *CCL26*, *ALOX15*, mast-cell and
+# eosinophil genes), shared by organs as different as nose, skin and oesophagus: *CPA3*, *MS4A2* (FcεRIβ), *HDC* and
+# *HPGDS* are mast-cell genes; *CDH26*, *POSTN*, *ALOX15*, *CCL26* and *SERPINB4* are IL-13-induced epithelial genes.
+# Down-regulated genes are fewer and smaller in effect (metabolic and nuclear-receptor genes, see 6a). Most signature genes replicate in only 2–3
+# individual studies – expected given the very different tissues – but none rests on a single study by
+# construction. This signature is the reference set for testing the dietary bioactives.
