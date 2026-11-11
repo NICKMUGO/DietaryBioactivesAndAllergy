@@ -383,9 +383,12 @@ for name, d in datasets.items():
     step = {"dataset": name, "genes before": n0, "samples before": x.shape[1]}
     if d["kind"] == "array":
         step["max value"] = round(float(np.nanmax(x.values)), 1)
-        assert step["max value"] < 20, "array data not log2"
         x = x.dropna()
-        step["transform"] = "already log2"
+        if step["max value"] > 20:
+            x = np.log2(x.clip(lower=np.nanpercentile(x.values[x.values > 0], 0.1)))
+            step["transform"] = "log2 applied (was linear)"
+        else:
+            step["transform"] = "already log2"
         q75 = x.quantile(0.75, axis=1)
         x = x[q75 > q75.quantile(0.20)]
     elif d["kind"] == "rnaseq_counts":
