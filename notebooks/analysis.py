@@ -978,3 +978,115 @@ DASH["enrichment"] = {
     "scatter_other": oth.sample(min(1500, len(oth)), random_state=SEED)[["n_targets", "log2FE"]].round(3).values.tolist(),
     "scatter_diet": [[int(dd.loc[c, "n_targets"]), round(float(dd.loc[c, "log2FE"]), 3), BIOACTIVES[c][0]] for c in dd.index],
 }
+
+# %% [markdown]
+# ### 5d. Do bioactives push their targets *against* the disease direction? (O2, H3)
+#
+# CTD records the direction of many interactions ("X results in **decreased** expression of *IL6* mRNA"). We keep
+# only simple, direct expression effects (`increases^expression` or `decreases^expression`, not effects on reactions),
+# give each compound–gene pair a net direction (+1/−1; ties dropped), and compare it with the gene's direction
+# in allergy (sign of the meta-analysis Z).
+#
+# *Reversal fraction* = share of a compound's directional signature targets that it moves in the opposite
+# direction to disease. A naive null is 50 %, but that ignores two biases (most signature genes are *up* in allergy;
+# many compounds are mainly reported to *decrease* expression). So the **expected** reversal for each compound is
+# computed from its own up/down profile across the whole universe and the signature's up/down split, and the
+# observed reversal is tested against that expectation (binomial test). The same is done for every CTD chemical.
+
+# %%
+simple = ctd[ctd.InteractionActions.isin(["increases^expression", "decreases^expression"])].copy()
+simple["d"] = np.where(simple.InteractionActions == "increases^expression", 1, -1)
+direc = simple.groupby(["ChemicalName", "GeneSymbol"]).d.sum()
+direc = np.sign(direc[direc != 0]).astype(int).rename("d").reset_index()
+direc = direc[direc.GeneSymbol.isin(Uidx)]
+dis_dir = meta.dir
+
+def reversal(chem_df):
+    g = chem_df.set_index("GeneSymbol").d
+    on_sig = g[g.index.isin(SIG.index)]
+    n = len(on_sig)
+    if n == 0:
+        return None
+    s = dis_dir.loc[on_sig.index]
+    rev = int((on_sig.values == -s.values).sum())
+    p_dec = (g == -1).mean()
+    p_up_sig = len(SIG_UP) / len(SIG)
+    exp = p_dec * p_up_sig + (1 - p_dec) * (1 - p_up_sig)
+    return dict(n_dir_sig=n, n_reversed=rev, reversal=rev / n, expected_reversal=exp, frac_decrease_overall=p_dec,
+                p=stats.binomtest(rev, n, exp, alternative="greater").pvalue if n else np.nan,
+                score=float(-(on_sig.values * s.values).mean()))
+
+rev_all = pd.DataFrame({c: r for c, grp in direc.groupby("ChemicalName") if (r := reversal(grp)) is not None}).T
+rev_all = rev_all[rev_all.n_dir_sig >= 10].astype(float)
+rev_all["dietary"] = rev_all.index.isin(list(BIOACTIVES))
+rev_all["excess"] = rev_all.reversal - rev_all.expected_reversal
+rev_bio = rev_all[rev_all.dietary].copy()
+rev_bio["FDR"] = multipletests(rev_bio.p, method="fdr_bh")[1]
+rev_bio.insert(0, "compound", [BIOACTIVES[c][0] for c in rev_bio.index])
+rev_bio = rev_bio.sort_values("excess", ascending=False)
+rev_bio.to_csv(RES / "bioactive_reversal.csv")
+
+pooled_rev, pooled_n = rev_bio.n_reversed.sum(), rev_bio.n_dir_sig.sum()
+pooled_exp = (rev_bio.expected_reversal * rev_bio.n_dir_sig).sum() / pooled_n
+mw_rev = stats.mannwhitneyu(rev_bio.excess, rev_all.loc[~rev_all.dietary, "excess"], alternative="greater")
+print(f"{len(rev_bio)} bioactives and {int((~rev_all.dietary).sum())} other chemicals have ≥10 directional signature targets")
+print(f"pooled bioactive reversal: {pooled_rev:.0f}/{pooled_n:.0f} = {pooled_rev / pooled_n:.1%} "
+      f"(expected from direction biases {pooled_exp:.1%}; naive 50%)")
+print(f"bioactives with significant excess reversal (FDR<0.05): {(rev_bio.FDR < 0.05).sum()}/{len(rev_bio)}")
+print(f"excess reversal, dietary vs other chemicals: median {rev_bio.excess.median():+.3f} vs "
+      f"{rev_all.loc[~rev_all.dietary, 'excess'].median():+.3f}; one-sided Mann–Whitney p = {mw_rev.pvalue:.3g}")
+rev_bio[["compound", "n_dir_sig", "n_reversed", "reversal", "expected_reversal", "excess", "p", "FDR"]].round(3)
+
+# %%
+fig, axes = plt.subplots(1, 2, figsize=(13, 5.4), gridspec_kw={"width_ratios": [1.2, 1]})
+ax = axes[0]
+rb = rev_bio.sort_values("reversal")
+yy = np.arange(len(rb))
+ax.barh(yy, rb.reversal, color=np.where(rb.FDR < 0.05, C_AQUA, "#c3c2b7"), height=0.7)
+ax.scatter(rb.expected_reversal, yy, marker="|", s=90, c=C_INK, lw=1.5, label="expected from direction biases", zorder=4)
+ax.axvline(0.5, color=C_MUTED, lw=0.8, ls="--")
+for yi, (r_, n_) in enumerate(zip(rb.reversal, rb.n_dir_sig)):
+    ax.text(r_ + 0.01, yi, f"n={int(n_)}", va="center", fontsize=5.5, color="#52514e")
+ax.set_yticks(yy, rb.compound, fontsize=6.5); ax.grid(axis="y", visible=False); ax.set_xlim(0, 1.08)
+ax.set(xlabel="fraction of signature targets moved opposite to disease", title="H3: reversal per bioactive (aqua = FDR<0.05)")
+ax.legend(fontsize=7, loc="lower right")
+ax = axes[1]
+oth_ex = rev_all.loc[~rev_all.dietary, "excess"]
+binsr = np.linspace(-0.6, 0.6, 25)
+ax.hist(oth_ex, bins=binsr, density=True, color="#d4d3cc", label=f"other chemicals (n={len(oth_ex)})")
+ax.hist(rev_bio.excess, bins=binsr, density=True, color=C_AQUA, histtype="step", lw=2, label=f"dietary bioactives (n={len(rev_bio)})")
+ax.axvline(0, color=C_INK, lw=0.8)
+ax.set(xlabel="observed − expected reversal", ylabel="density", title=f"Dietary vs other chemicals\none-sided Mann–Whitney p = {mw_rev.pvalue:.2g}")
+ax.legend(fontsize=7)
+fig.tight_layout()
+savefig(fig, "reversal_bioactives")
+
+hr_o, er = np.histogram(oth_ex, bins=binsr, density=True)
+hr_d, _ = np.histogram(rev_bio.excess, bins=binsr, density=True)
+DASH["reversal"] = {
+    "table": rev_bio.reset_index(names="ctd_name")[["ctd_name", "compound", "n_dir_sig", "n_reversed", "reversal",
+             "expected_reversal", "excess", "p", "FDR"]].round(4).to_dict(orient="records"),
+    "pooled": [int(pooled_rev), int(pooled_n), float(pooled_exp)], "mw_p": float(mw_rev.pvalue),
+    "median_diet": float(rev_bio.excess.median()), "median_other": float(oth_ex.median()), "n_other": int(len(oth_ex)),
+    "hist": {"edges": er.round(3).tolist(), "other": hr_o.round(4).tolist(), "dietary": hr_d.round(4).tolist()},
+}
+
+# %% [markdown]
+# **Interpretation of 5c–5d (the core answer).**
+#
+# * **The naive analysis is misleading.** Without degree matching, 8 of 44 bioactives (e.g. sulforaphane, genistein,
+#   curcumin, vitamin C, eugenol, quercetin) appear significantly "enriched" in the allergy signature – and so do
+#   ~20 % of *all* CTD chemicals. The degree table shows why: signature genes make up 15.5 % of the most-studied
+#   decile of genes but only ~8 % of the least-studied, so any chemical whose targets are well-studied genes
+#   inherits an apparent enrichment.
+# * **H1 – largely not supported.** After degree matching, only **sulforaphane** (the broccoli isothiocyanate and
+#   NRF2 activator) remains significantly enriched (≈ 1.27-fold, FDR ≈ 0.03). The other 43 compounds sit around a
+#   fold-enrichment of 1, several below it.
+# * **H2 – not supported.** Dietary bioactives are no more enriched than size-matched non-dietary CTD chemicals
+#   (medians ≈ −0.1 vs −0.07 log2; one-sided Mann–Whitney p ≈ 0.75; regression coefficient ≈ 0, CI spanning
+#   −0.18 to +0.13). Being "dietary" carries no special connection to allergy genes in curated data.
+# * **H3 – not supported.** Pooled over the 14 bioactives with enough directional data, 47 % of signature-gene
+#   effects oppose disease – slightly *below* the 50 % expected from direction biases. No compound reaches FDR <
+#   0.05; curcumin (69 % vs 55 % expected, nominal p ≈ 0.03) and EGCG are the best candidates and the most
+#   plausible leads for follow-up, but not significant after correction. Quercetin – the flavonoid most often
+#   promoted as "anti-allergic" – moves signature genes in the disease direction slightly more often than expected.
