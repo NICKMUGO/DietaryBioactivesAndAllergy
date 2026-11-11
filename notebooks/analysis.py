@@ -435,7 +435,7 @@ qc_table
 # %%
 def infer_sex(x):
     y = x.loc[[g for g in ["RPS4Y1", "DDX3Y", "KDM5D", "EIF1AY"] if g in x.index]].mean()
-    score = y - x.loc["XIST"]
+    score = y - x.loc["XIST"] if "XIST" in x.index else y
     srt = np.sort(score.values)
     cut = srt[np.argmax(np.diff(srt))] + np.max(np.diff(srt)) / 2
     return pd.Series(np.where(score > cut, "M", "F"), index=x.columns), y
