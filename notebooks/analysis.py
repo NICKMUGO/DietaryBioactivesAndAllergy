@@ -1364,6 +1364,7 @@ from sklearn.dummy import DummyClassifier
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold, cross_validate, permutation_test_score
 from sklearn.metrics import roc_auc_score
+warnings.filterwarnings("ignore", category=UserWarning)
 
 n_bio_per_gene = pd.Series(Counter(U[i] for c in BIOACTIVES for i in chem_targets_U[c]))
 HUB = set(n_bio_per_gene.index[n_bio_per_gene >= 4])
