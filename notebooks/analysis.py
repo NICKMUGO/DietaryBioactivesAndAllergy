@@ -1545,3 +1545,49 @@ DASH["ml"] = {"within": ml.round(4).replace({np.nan: None}).to_dict(orient="reco
 # (≈ 0.63). Restricting the signature to bioactive-targeted genes changes nothing (≈ 0.81). **H4 is therefore only
 # partly supported:** bioactive targets classify disease far better than the majority baseline, but no better than
 # equally many random genes, within or across datasets.
+
+# %% [markdown]
+# ## Stage 8 – Conclusions
+#
+# **Research question:** *Are genes consistently dysregulated across human allergic tissues over-represented among the
+# curated targets of dietary bioactives beyond study bias, and do these compounds oppose the disease direction?*
+#
+# **Answer: essentially no.** A robust, reproducible cross-tissue allergy signature exists, but the curated targets
+# of 44 common dietary bioactives are not specially enriched in it once gene study-bias is controlled, are no more
+# enriched than those of ordinary non-dietary chemicals, and are not preferentially moved in the anti-disease
+# direction. The one exception (sulforaphane) is modest and partly reflects its history as an anti-cancer compound.
+#
+# | Objective | Result | Hypothesis |
+# |---|---|---|
+# | **O1 – signature** | 7 contrasts (5 tissues, 371 samples) → 1,177-gene consensus signature (860 up, 317 down), anchored by type-2 / mast-cell genes (*CPA3*, *CDH26*, *POSTN*, *CCL26*, *ALOX15*, *SERPINB4*), replicated in ≥ 2 studies each; a signature learned on 6 studies separates cases from controls in the 7th without any training. | – |
+# | **O2 – enrichment & direction** | Naive test: 8/44 bioactives "enriched" (and 20 % of all CTD chemicals). Degree-matched: 1/44 (sulforaphane, 1.27×, FDR ≈ 0.03). Dietary vs other chemicals: no difference (p ≈ 0.75). Reversal: 47 % vs 50 % expected, 0/14 compounds significant. | H1 not supported (one exception); H2 not supported; H3 not supported |
+# | **O3 – interpretation** | Up: interleukin signalling, immunoregulatory interactions, granulocyte degranulation, mitotic cell cycle. Down: de novo ceramide/sphingolipid synthesis, sterol / nuclear-receptor metabolism (barrier link). Network hubs are generic stress/proliferation genes (*BAX*, *NFE2L2*, *MMP9*, *CCNB1*); compounds reverse proliferation genes but reinforce *NFE2L2* (likely a protective response). CTD curated allergy genes were *not* enriched (they are mostly susceptibility loci). | – |
+# | **O4 – prediction** | Bioactive hub targets classify disease well above the majority baseline (AUROC 0.82–1.00 within datasets; 0.84 across datasets), but no better than random gene sets of equal size (50th percentile within; 0.83, p ≈ 0.38 across). An untrained signature score from 6 studies reaches AUROC ≈ 0.80 on the 7th. | H4 partly supported |
+#
+# **Limitations**
+# * **Curated knowledge ≠ biology.** CTD reflects what has been studied: interactions come mostly from cancer cell lines
+#   and high doses, and are dominated by a few compounds (quercetin, resveratrol). Absence of enrichment is not proof of
+#   no effect, and dose, bioavailability and metabolism (e.g. quercetin is poorly absorbed) are ignored.
+# * **The reversal hypothesis is simplistic.** Some disease changes are compensatory (NRF2), so "reinforcing" a change is
+#   not necessarily harmful.
+# * **Heterogeneous, small and imperfect data.** Different tissues, platforms and ages (children vs adults); two
+#   studies with ≤ 16 samples; GSE41861 nasal and bronchial samples share subjects (not independent in the
+#   meta-analysis) and their deposited values had the sex signal removed; one GSE19187 sex annotation is inconsistent;
+#   GSE36830 needed log-transformation. Bulk tissue mixes cell types, so part of the signature reflects cell
+#   composition (immune infiltrate) rather than per-cell regulation.
+# * **Methods.** The limma-style moderated t was re-implemented in Python and the Stouffer meta-analysis assumes
+#   independence; the consensus thresholds are a choice. Leaving out one contrast changes the signature noticeably (see the stability
+#   table in Stage 7), especially when a large, strongly inflamed study (polyps RNA-seq, EoE, AD) is removed, so individual
+#   signature genes should be read as "replicated in several tissues", not as a definitive list.
+# * **Machine learning** is on small samples; within-dataset CV is optimistic for tiny studies, and cross-dataset z-scoring
+#   uses the (unlabelled) test-set mean and variance.
+#
+# **Future steps**
+# 1. Use *perturbational* data instead of curated literature: human cells treated with these compounds at realistic
+#    doses (e.g. LINCS L1000 / CMap, GEO treatment series) to compute signature reversal directly.
+# 2. Focus on the leads that survived or came closest (sulforaphane, curcumin, EGCG) with cell-type-resolved data
+#    (single-cell airway and skin atlases) to separate epithelial from immune effects.
+# 3. Add a dietary-exposure arm: link FooDB food composition or cohort nutrition data to allergy outcomes, and test
+#    the ceramide / sphingolipid barrier axis, which emerged here as a biologically coherent target.
+# 4. Use random-effects meta-analysis with subject-level pairing for GSE41861 and protein-interaction context (STRING)
+#    to prioritise signature hubs that are not merely well-studied.
