@@ -1,0 +1,681 @@
+<meta name="dash-one-writer">
+<style>
+  .bx { display: flex; flex-direction: column; gap: var(--cds-gap-xl); max-width: 1180px; margin: 0 auto; }
+  .bx h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .bx h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .bx h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .bx p { margin: 0; max-width: 72ch; line-height: 1.55; }
+  .bx .muted { color: var(--color-fg-muted); }
+  .bx .small { font-size: var(--cds-font-size-caption); }
+  .bx-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .bx-q { font-size: var(--cds-font-size-body); color: var(--color-fg-muted); max-width: 80ch; }
+  .bx-take { font-size: var(--cds-font-size-heading); line-height: 1.45; max-width: 80ch; }
+  .bx-nav { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); font-size: var(--cds-font-size-caption); }
+  .bx-nav a { color: var(--color-fg-muted); text-decoration: none; border-bottom: 1px solid var(--color-border-line); padding-bottom: 2px; }
+  .bx-nav a:hover, .bx-nav a:focus-visible { color: var(--color-fg); border-color: var(--color-fg); }
+  .bx-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--cds-gap-md); }
+  .bx-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+  .bx-tile .v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .bx-tile .l { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.4; }
+  .bx-sec { display: flex; flex-direction: column; gap: var(--cds-gap-md); scroll-margin-top: 16px; }
+  .bx-sec > header { display: flex; flex-direction: column; gap: var(--cds-gap-xs); border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-lg); }
+  .bx-eyebrow { font-size: var(--cds-font-size-caption); letter-spacing: .06em; text-transform: uppercase; color: var(--color-fg-muted); }
+  .bx-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: var(--cds-gap-lg); }
+  .bx-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+  .bx-chart { position: relative; width: 100%; min-height: 220px; }
+  .bx-chart.tall { min-height: 560px; }
+  .bx-chart svg { display: block; overflow: visible; }
+  .bx-chart text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); }
+  .bx-chart .axis text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); }
+  .bx-chart .axis path, .bx-chart .axis line { stroke: var(--cds-chart-axis); }
+  .bx-chart .grid line { stroke: var(--cds-chart-grid); }
+  .bx-chart .grid path { display: none; }
+  .bx-chart .ref { stroke: var(--cds-chart-reference); stroke-dasharray: 3 3; }
+  .bx-chart text.lbl { fill: var(--color-fg); }
+  .bx-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); font-size: var(--cds-font-size-caption); line-height: 1.45; max-width: 280px; z-index: 5; color: var(--color-fg); }
+  .bx-tip b { font-weight: var(--cds-font-weight-medium); }
+  .bx-tip .t2 { color: var(--cds-text-secondary); }
+  .bx-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bx-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .bx-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+  .bx-legend i.k0 { background: var(--bx-c0); } .bx-legend i.k1 { background: var(--bx-c1); }
+  .bx-legend i.k2 { background: var(--bx-c2); } .bx-legend i.k3 { background: var(--bx-c3); }
+  .bx-legend i.km { background: var(--cds-chart-muted); } .bx-legend i.ring { background: transparent; border: 1.5px solid var(--color-fg-muted); border-radius: 50%; }
+  .bx-legend i.sq { background: var(--color-fg-muted); }
+  .bx-controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; }
+  .bx-controls label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bx-search { font: inherit; font-size: var(--cds-font-size-caption); padding: 6px 10px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); min-width: 0; width: 200px; }
+  .bx-tablewrap { overflow-x: auto; }
+  .bx table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .bx th, .bx td { text-align: left; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+  .bx th { color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); white-space: nowrap; }
+  .bx td.num, .bx th.num { text-align: right; }
+  .bx .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: var(--cds-font-size-caption); border: 1px solid var(--color-border-line); white-space: nowrap; }
+  .bx .pill.ok { color: var(--color-ok); border-color: var(--color-ok); }
+  .bx .pill.warn { color: var(--color-warn); border-color: var(--color-warn); }
+  .bx .pill.bad { color: var(--color-bad); border-color: var(--color-bad); }
+  .bx-verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: var(--cds-gap-md); }
+  .bx-verdicts .bx-card p { font-size: var(--cds-font-size-caption); }
+  .bx details summary { cursor: pointer; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .bx details p, .bx details li { font-size: var(--cds-font-size-caption); line-height: 1.55; }
+  [data-dash-source-state=refreshing] { opacity: .5; }
+</style>
+
+<div class="bx" id="top">
+  <div class="bx-head" id="title">
+    <span class="bx-eyebrow">Computing Bioinformatics · group project results</span>
+    <h1>Dietary bioactives and the allergy transcriptome</h1>
+    <p class="bx-q">Are genes that are consistently dysregulated across human allergic tissues over-represented among the curated targets of dietary bioactive compounds, beyond what gene study-bias explains, and do these compounds shift their targets against the disease direction?</p>
+    <p class="bx-take" id="takeaway">Across <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_contrasts">—</b> allergic-vs-healthy contrasts and <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_samples">—</b> samples, a <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_sig">—</b>-gene allergy signature replicates across tissues. After correcting for study bias, only <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_deg_sig">—</b> of <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_bioactives">—</b> dietary bioactives stays enriched in it, against <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_naive_sig">—</b> with a naive test.</p>
+    <nav class="bx-nav" aria-label="Sections">
+      <a href="#data">Data &amp; QC</a><a href="#de">Differential expression</a><a href="#signature">Consensus signature</a>
+      <a href="#enrichment">Bioactive enrichment</a><a href="#reversal">Direction of effect</a><a href="#pathways">Pathways</a>
+      <a href="#network">Network</a><a href="#ml">Machine learning</a><a href="#conclusions">Conclusions</a>
+    </nav>
+  </div>
+
+  <div class="bx-tiles" id="tiles">
+    <div class="bx-tile" id="tile-signature"><span class="v" data-draw="m" data-source="summary" data-field="value" data-where="metric=n_sig">—</span><span class="l">consensus allergy-signature genes (<b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_sig_up">—</b> up, <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_sig_down">—</b> down), each significant in at least 2 studies</span></div>
+    <div class="bx-tile" id="tile-naive"><span class="v" data-draw="m" data-source="summary" data-field="value" data-where="metric=n_naive_sig">—</span><span class="l">bioactives "enriched" with a naive hypergeometric test (FDR &lt; 0.05)</span></div>
+    <div class="bx-tile" id="tile-degree"><span class="v" data-draw="m" data-source="summary" data-field="value" data-where="metric=n_deg_sig">—</span><span class="l">bioactives still enriched against a degree-matched null (sulforaphane)</span></div>
+    <div class="bx-tile" id="tile-reversal"><span class="v"><span data-draw="m" data-source="summary" data-field="value" data-where="metric=rev_pct">—</span>%</span><span class="l">of bioactive effects on signature genes oppose disease, against <b data-draw="m" data-source="summary" data-field="value" data-where="metric=rev_expected_pct">—</b>% expected by chance</span></div>
+    <div class="bx-tile" id="tile-ml"><span class="v" data-draw="m" data-source="summary" data-field="value" data-where="metric=lodo_hub">—</span><span class="l">AUROC on unseen studies using bioactive-target genes; random genes of the same size reach <b data-draw="m" data-source="summary" data-field="value" data-where="metric=lodo_random">—</b></span></div>
+  </div>
+
+    <section class="bx-sec" id="data">
+    <header><span class="bx-eyebrow">Stages 2–3</span><h2>Seven contrasts, five tissues, three platforms</h2>
+      <p class="muted">Public NCBI GEO series, analysed as allergic vs healthy. Only independent people are compared: lesional AD skin against healthy volunteers, polyps against control turbinates.</p></header>
+    <div class="bx-tablewrap">
+      <table id="studies-table" data-source="studies" data-row-key="dataset">
+        <thead><tr><th data-field="dataset">Contrast</th><th data-field="GEO">GEO</th><th data-field="tissue">Tissue</th><th data-field="data_type">Platform</th><th class="num" data-field="allergic">Allergic</th><th class="num" data-field="healthy">Healthy</th><th class="num" data-field="genes_tested">Genes tested</th><th class="num" data-field="up">DEGs up</th><th class="num" data-field="down">DEGs down</th></tr></thead>
+        <tbody data-draw="studies"></tbody>
+      </table>
+    </div>
+    <div class="bx-card" id="qc-card">
+      <h3>Quality control: what was checked and what was found</h3>
+      <p class="small muted">GSE36830 arrived on a linear scale and had to be log2-transformed. GSE41861 shows no sex-chromosome signal at all, so its deposited values were adjusted before upload. One GSE19187 sample is recorded as female but expresses Y-chromosome genes.</p>
+      <div class="bx-tablewrap">
+        <table id="qc-table" data-source="qc" data-row-key="dataset">
+          <thead><tr><th data-field="dataset">Contrast</th><th class="num" data-field="genes_before">Genes before</th><th class="num" data-field="genes_after">after filter</th><th class="num" data-field="samples_before">Samples before</th><th class="num" data-field="samples_after">after</th><th data-field="transform">Scale / normalisation</th><th data-field="outliers_removed">Outliers removed</th><th data-field="sex_check">Sex check</th></tr></thead>
+          <tbody data-draw="qc"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+    <section class="bx-sec" id="de">
+    <header><span class="bx-eyebrow">Stage 5a</span><h2>Each study recovers type-2 allergic inflammation</h2>
+      <p class="muted">Moderated t-tests (limma-style empirical Bayes), Benjamini–Hochberg FDR. A DEG has FDR &lt; 0.05 and |log2 fold change| ≥ 0.5. <b data-draw="m" data-source="summary" data-field="value" data-where="metric=posctrl_up">—</b> of <b data-draw="m" data-source="summary" data-field="value" data-where="metric=posctrl_measured">—</b> positive-control results are significantly up, and <b data-draw="m" data-source="summary" data-field="value" data-where="metric=posctrl_down">—</b> are down.</p></header>
+    <div class="bx-grid2">
+      <div class="bx-card" id="volcano-card">
+        <div class="bx-controls"><label for="volcano-select">Contrast</label><select id="volcano-select" class="dash-select" data-draw="volcano-select" data-source="studies" aria-label="Contrast shown in the volcano plot"></select></div>
+        <div class="bx-legend"><span><i class="k0"></i>up in allergy</span><span><i class="k1"></i>down in allergy</span><span><i class="km"></i>not significant (sample)</span></div>
+        <div class="bx-chart dash-skeleton" id="volcano-chart" data-draw="volcano" data-source="volcano"></div>
+        <p class="small muted">Every DEG is plotted, plus a random sample of 1,500 non-significant genes. Hover a point for the gene.</p>
+      </div>
+      <div class="bx-card" id="posctrl-card">
+        <h3>Positive-control genes (log2 fold change)</h3>
+        <div class="bx-legend"><span><i class="k0"></i>higher in allergy</span><span><i class="k1"></i>lower in allergy</span><span>* FDR &lt; 0.05 · blank = not expressed</span></div>
+        <div class="bx-chart dash-skeleton" id="posctrl-chart" data-draw="posctrl" data-source="posctrl"></div>
+        <p class="small muted">POSTN, CLCA1 and SERPINB2 are IL-13-induced airway genes, CCL26 is the top EoE gene, CPA3 marks mast cells and CLC marks eosinophils.</p>
+      </div>
+    </div>
+  </section>
+
+    <section class="bx-sec" id="signature">
+    <header><span class="bx-eyebrow">Stage 5b</span><h2>A consensus signature shared by nose, sinus, bronchus, skin and oesophagus</h2>
+      <p class="muted">Weighted Stouffer meta-analysis over <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_meta_genes">—</b> genes. A signature gene has meta-FDR &lt; 0.01, the same direction in at least 75% of studies, and significance in at least 2 studies on its own.</p></header>
+    <div class="bx-grid2">
+      <div class="bx-card" id="sigheat-card">
+        <h3>Top 25 up and 15 down signature genes</h3>
+        <div class="bx-legend"><span><i class="k0"></i>up in allergy</span><span><i class="k1"></i>down in allergy</span><span>darker = larger change · blank = not measured</span></div>
+        <div class="bx-chart tall dash-skeleton" id="sigheat-chart" data-draw="sigheat" data-source="sig_heatmap"></div>
+      </div>
+      <div class="bx-card" id="sigtable-card">
+        <div class="bx-controls"><label for="sig-search">Find a gene</label><input id="sig-search" class="bx-search" type="search" placeholder="e.g. POSTN" autocomplete="off"></div>
+        <div class="bx-tablewrap">
+          <table id="sig-table" data-source="signature" data-row-key="gene">
+            <thead><tr><th data-field="gene">Gene</th><th data-field="direction">Direction</th><th class="num" data-field="Z">Stouffer Z</th><th class="num" data-field="FDR">FDR</th><th class="num" data-field="mean_log2FC">Mean log2FC</th><th class="num" data-field="n_sig_same_dir">Studies significant</th></tr></thead>
+            <tbody data-draw="sigtable"></tbody>
+          </table>
+        </div>
+        <p class="small muted" data-draw="sigtable-note">—</p>
+      </div>
+    </div>
+  </section>
+
+    <section class="bx-sec" id="enrichment">
+    <header><span class="bx-eyebrow">Stage 5c · H1, H2</span><h2>Bioactive targets are not specially enriched once study bias is removed</h2>
+      <p class="muted">Inflammatory genes are the most studied genes in CTD, and they are also the genes that change in allergy. A naive test calls <b data-draw="m" data-source="summary" data-field="value" data-where="metric=pct_all_chem_naive">—</b>% of all CTD chemicals "enriched". The degree-matched null draws random targets from genes that have been studied just as much.</p></header>
+    <div class="bx-grid2">
+      <div class="bx-card" id="dumbbell-card">
+        <h3>Fold enrichment of each compound's targets in the signature</h3>
+        <div class="bx-legend"><span><i class="ring"></i>naive</span><span><i class="k2"></i>degree-matched, FDR &lt; 0.05</span><span><i class="km"></i>degree-matched, not significant</span></div>
+        <div class="bx-chart tall dash-skeleton" id="dumbbell-chart" data-draw="dumbbell" data-source="enrichment"></div>
+      </div>
+      <div class="bx-card" id="side-enrich">
+        <h3>The confounder: signature genes by how well studied they are</h3>
+        <div class="bx-chart dash-skeleton" id="degbins-chart" data-draw="degbins" data-source="degbins"></div>
+        <p class="small muted">Share of genes in each CTD-degree decile that belong to the allergy signature. Decile 10 holds genes linked to 81–2,086 chemicals.</p>
+        <h3>Dietary bioactives against <span data-draw="m" data-source="summary" data-field="value" data-where="metric=n_other_chem">—</span> other CTD chemicals</h3>
+        <div class="bx-legend"><span><i class="k2"></i>dietary bioactive</span><span><i class="km"></i>other chemical (sample)</span></div>
+        <div class="bx-chart dash-skeleton" id="chem-chart" data-draw="chemicals" data-source="chemicals"></div>
+        <p class="small muted">Degree-adjusted log2 fold enrichment. Mann–Whitney one-sided p = <b data-draw="m" data-source="summary" data-field="value" data-where="metric=mw_p">—</b>. Regression effect of being dietary: <b data-draw="m" data-source="summary" data-field="value" data-where="metric=ols_coef">—</b> (95% CI <b data-draw="m" data-source="summary" data-field="value" data-where="metric=ols_lo">—</b> to <b data-draw="m" data-source="summary" data-field="value" data-where="metric=ols_hi">—</b>, crosses zero).</p>
+      </div>
+    </div>
+  </section>
+
+    <section class="bx-sec" id="reversal">
+    <header><span class="bx-eyebrow">Stage 5d · H3</span><h2>Compounds do not push signature genes against the disease</h2>
+      <p class="muted">For CTD effects that state a direction ("increases" or "decreases expression"), the share that opposes the gene's change in allergy. The expected share comes from each compound's own up/down bias. None of the <b data-draw="m" data-source="summary" data-field="value" data-where="metric=rev_n_compounds">—</b> testable compounds reaches FDR &lt; 0.05.</p></header>
+    <div class="bx-card" id="reversal-card">
+      <div class="bx-legend"><span><i class="k2"></i>observed reversal</span><span><i class="sq"></i>expected from direction biases (tick)</span><span>dashed line = 50%</span></div>
+      <div class="bx-chart dash-skeleton" id="reversal-chart" data-draw="reversal" data-source="reversal"></div>
+      <p class="small muted">Curcumin (nominal p 0.027) and EGCG come closest; neither survives multiple-testing correction.</p>
+    </div>
+  </section>
+
+    <section class="bx-sec" id="pathways">
+    <header><span class="bx-eyebrow">Stage 6a–b</span><h2>What the signature is made of</h2>
+      <p class="muted">Reactome over-representation (hypergeometric, BH-FDR), using the meta-analysis genes as background.</p></header>
+    <div class="bx-grid2">
+      <div class="bx-card" id="reactome-card">
+        <div class="bx-controls"><label for="reactome-select">Gene set</label><select id="reactome-select" class="dash-select" data-draw="reactome-select" data-source="reactome" aria-label="Gene set for pathway enrichment"></select></div>
+        <div class="bx-chart dash-skeleton" id="reactome-chart" data-draw="reactome" data-source="reactome"></div>
+        <p class="small muted">Bars show −log10 FDR; the dashed line is FDR = 0.05. Hover a bar for its genes.</p>
+      </div>
+      <div class="bx-card" id="biology-card">
+        <h3>Reading the pathways</h3>
+        <p class="small"><b>Up in allergy:</b> interleukin signalling (IL-4/IL-13 targets), immunoregulatory interactions, granulocyte degranulation and a mitotic cell-cycle module. This is type-2 inflammation with epithelial hyperplasia.</p>
+        <p class="small"><b>Down in allergy:</b> de novo ceramide synthesis (DEGS1/2, SPTLC3), bile-acid and sterol metabolism, nuclear receptors. Low ceramide is a hallmark of the atopic skin barrier, and the asthma GWAS gene ORMDL3 regulates the same pathway.</p>
+        <p class="small"><b>Sulforaphane's overlap</b> is mostly mitotic cell-cycle genes from cancer studies, plus eicosanoid and redox genes. Only the second part is allergy-specific.</p>
+        <h3>External check against CTD curated disease genes</h3>
+        <div class="bx-tablewrap">
+          <table id="validation-table" data-source="validation" data-row-key="gene_set">
+            <thead><tr><th data-field="gene_set">Curated gene set</th><th class="num" data-field="curated_genes">Genes</th><th class="num" data-field="in_signature">In signature</th><th class="num" data-field="FE_degmatched">FE (degree-matched)</th><th class="num" data-field="p_degmatched">p</th></tr></thead>
+            <tbody data-draw="validation"></tbody>
+          </table>
+        </div>
+        <p class="small muted">A negative result. Curated allergy genes are mostly susceptibility loci and T-cell cytokines that bulk tissue barely expresses, so they are not enriched.</p>
+      </div>
+    </div>
+  </section>
+
+    <section class="bx-sec" id="network">
+    <header><span class="bx-eyebrow">Stage 6c · NetworkX</span><h2>Many compounds converge on a few generic stress genes</h2>
+      <p class="muted">The <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_net_genes">—</b> signature genes targeted by the most bioactives, and their compounds. Edge colour shows whether the reported effect opposes or matches the disease direction.</p></header>
+    <div class="bx-grid2">
+      <div class="bx-card" id="net-card">
+        <div class="bx-legend"><span><i class="k2"></i>compound reverses disease change</span><span><i class="k3"></i>compound reinforces it</span><span><i class="km"></i>no direction</span></div>
+        <div class="bx-legend"><span><i class="k0" style="border-radius:50%"></i>gene up in allergy</span><span><i class="k1" style="border-radius:50%"></i>gene down</span><span><i class="sq"></i>dietary compound</span></div>
+        <div class="bx-chart tall dash-skeleton" id="net-chart" data-draw="network" data-source="net_nodes net_edges"></div>
+        <p class="small muted">Hover a node to highlight its links.</p>
+      </div>
+      <div class="bx-card" id="hubs-card">
+        <h3>Top hub genes: reversed or reinforced?</h3>
+        <div class="bx-legend"><span><i class="k2"></i>reverses</span><span><i class="k3"></i>reinforces</span><span><i class="km"></i>no direction</span></div>
+        <div class="bx-chart tall dash-skeleton" id="hubs-chart" data-draw="hubs" data-source="hubs"></div>
+        <p class="small muted">Compounds lower proliferation genes (CCNB1, CCNA2, MMP9) but raise NFE2L2 (NRF2), which is already up in allergy as a protective antioxidant response. Reinforcing that change is probably beneficial, which is a limit of the simple reversal hypothesis.</p>
+      </div>
+    </div>
+  </section>
+
+    <section class="bx-sec" id="ml">
+    <header><span class="bx-eyebrow">Stage 7 · H4</span><h2>Bioactive-target genes classify disease, but so do random genes</h2>
+      <p class="muted">L2 logistic regression, repeated stratified cross-validation. Hub targets are the <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_hub">—</b> genes hit by at least 4 bioactives, chosen without any expression data. On average they beat <b data-draw="m" data-source="summary" data-field="value" data-where="metric=hub_pct_random">—</b>% of random gene sets of the same size.</p></header>
+    <div class="bx-grid2">
+      <div class="bx-card" id="mlwithin-card">
+        <h3>Within each study (cross-validated AUROC)</h3>
+        <div class="bx-legend"><span><i class="km"></i>random gene sets, same size (range)</span><span><i class="k0"></i>bioactive hub targets</span><span><i class="k1"></i>signature from other studies</span><span><i class="k2"></i>all genes, top 100 in-fold</span><span><i class="k3"></i>random forest on hub targets</span></div>
+        <div class="bx-chart dash-skeleton" id="mlwithin-chart" data-draw="mlwithin" data-source="ml_within ml_random"></div>
+        <p class="small muted">The majority-class baseline scores 0.5 everywhere.</p>
+      </div>
+      <div class="bx-card" id="lodo-card">
+        <h3>Leave one study out: train on six, test on the seventh</h3>
+        <div class="bx-legend"><span><i class="k0"></i>LR on hub targets</span><span><i class="km"></i>LR on random genes (mean)</span><span><i class="k1"></i>signature score, nothing trained</span></div>
+        <div class="bx-chart dash-skeleton" id="lodo-chart" data-draw="lodo" data-source="ml_lodo"></div>
+        <p class="small muted">Mean held-out AUROC: hub targets <b data-draw="m" data-source="summary" data-field="value" data-where="metric=lodo_hub">—</b>, random genes <b data-draw="m" data-source="summary" data-field="value" data-where="metric=lodo_random">—</b> (empirical p = <b data-draw="m" data-source="summary" data-field="value" data-where="metric=lodo_p">—</b>), untrained signature score <b data-draw="m" data-source="summary" data-field="value" data-where="metric=lodo_sig">—</b>.</p>
+      </div>
+    </div>
+  </section>
+
+    <section class="bx-sec" id="conclusions">
+    <header><span class="bx-eyebrow">Stage 8</span><h2>Answer: a real allergy signature, but no special link to dietary bioactives</h2></header>
+    <div class="bx-verdicts">
+      <div class="bx-card" id="v-o1"><span class="pill ok">O1 · achieved</span><p>A <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_sig">—</b>-gene consensus signature, anchored by mast-cell and IL-13 genes (CPA3, CDH26, POSTN, CCL26, ALOX15), transfers to unseen studies with no training (AUROC <b data-draw="m" data-source="summary" data-field="value" data-where="metric=lodo_sig">—</b>).</p></div>
+      <div class="bx-card" id="v-h1"><span class="pill bad">H1 · not supported</span><p>Only sulforaphane remains enriched after degree matching (<b data-draw="m" data-source="summary" data-field="value" data-where="metric=sulf_fe">—</b>×, FDR <b data-draw="m" data-source="summary" data-field="value" data-where="metric=sulf_fdr">—</b>), and partly through cancer cell-cycle genes.</p></div>
+      <div class="bx-card" id="v-h2"><span class="pill bad">H2 · not supported</span><p>Dietary compounds are no more enriched than <b data-draw="m" data-source="summary" data-field="value" data-where="metric=n_other_chem">—</b> other chemicals of similar size (p = <b data-draw="m" data-source="summary" data-field="value" data-where="metric=mw_p">—</b>).</p></div>
+      <div class="bx-card" id="v-h3"><span class="pill bad">H3 · not supported</span><p><b data-draw="m" data-source="summary" data-field="value" data-where="metric=rev_pct">—</b>% of effects oppose disease against <b data-draw="m" data-source="summary" data-field="value" data-where="metric=rev_expected_pct">—</b>% expected; <b data-draw="m" data-source="summary" data-field="value" data-where="metric=rev_n_sig">—</b> compounds significant.</p></div>
+      <div class="bx-card" id="v-h4"><span class="pill warn">H4 · partly supported</span><p>Hub targets beat the majority baseline but not random genes (<b data-draw="m" data-source="summary" data-field="value" data-where="metric=lodo_hub">—</b> vs <b data-draw="m" data-source="summary" data-field="value" data-where="metric=lodo_random">—</b> on unseen studies).</p></div>
+      <div class="bx-card" id="v-o3"><span class="pill ok">O3 · achieved</span><p>Up: interleukin signalling and proliferation. Down: ceramide synthesis, a barrier link. Network hubs are generic stress genes such as BAX, NFE2L2 and MMP9.</p></div>
+    </div>
+    <details id="limits">
+      <summary>Limitations and next steps</summary>
+      <ul>
+        <li>CTD is curated literature: mostly cancer cell lines and high doses, dominated by quercetin and resveratrol. A missing enrichment does not prove a missing effect, and bioavailability is ignored.</li>
+        <li>Some disease changes are compensatory (NRF2), so "reversal" is a crude test of benefit.</li>
+        <li>The studies differ in tissue, platform and age, and two have 16 or fewer samples. GSE41861 nasal and bronchial samples share subjects, and their values had the sex signal removed.</li>
+        <li>Leaving out one large study changes 30–60% of signature genes, so read single genes as replicated leads, not a final list.</li>
+        <li>Next: score reversal with perturbation data (LINCS L1000) at realistic doses; follow sulforaphane, curcumin and EGCG in single-cell airway and skin data; test the ceramide barrier axis.</li>
+      </ul>
+    </details>
+  </section>
+</div>
+
+<script>
+  dash.loader('summary', { description: 'Takes the summary table from the results bundle', fn: ({ answer }) => answer.summary });
+  dash.loader('studies', { description: 'Takes the studies table from the results bundle', fn: ({ answer }) => answer.studies });
+  dash.loader('qc', { description: 'Takes the qc table from the results bundle', fn: ({ answer }) => answer.qc });
+  dash.loader('posctrl', { description: 'Takes the posctrl table from the results bundle', fn: ({ answer }) => answer.posctrl });
+  dash.loader('volcano', { description: 'Takes the volcano table from the results bundle', fn: ({ answer }) => answer.volcano });
+  dash.loader('sig_heatmap', { description: 'Takes the sig_heatmap table from the results bundle', fn: ({ answer }) => answer.sig_heatmap });
+  dash.loader('signature', { description: 'Takes the signature table from the results bundle', fn: ({ answer }) => answer.signature });
+  dash.loader('enrichment', { description: 'Takes the enrichment table from the results bundle', fn: ({ answer }) => answer.enrichment });
+  dash.loader('chemicals', { description: 'Takes the chemicals table from the results bundle', fn: ({ answer }) => answer.chemicals });
+  dash.loader('degbins', { description: 'Takes the degbins table from the results bundle', fn: ({ answer }) => answer.degbins });
+  dash.loader('reversal', { description: 'Takes the reversal table from the results bundle', fn: ({ answer }) => answer.reversal });
+  dash.loader('reactome', { description: 'Takes the reactome table from the results bundle', fn: ({ answer }) => answer.reactome });
+  dash.loader('validation', { description: 'Takes the validation table from the results bundle', fn: ({ answer }) => answer.validation });
+  dash.loader('net_nodes', { description: 'Takes the net_nodes table from the results bundle', fn: ({ answer }) => answer.net_nodes });
+  dash.loader('net_edges', { description: 'Takes the net_edges table from the results bundle', fn: ({ answer }) => answer.net_edges });
+  dash.loader('hubs', { description: 'Takes the hubs table from the results bundle', fn: ({ answer }) => answer.hubs });
+  dash.loader('ml_within', { description: 'Takes the ml_within table from the results bundle', fn: ({ answer }) => answer.ml_within });
+  dash.loader('ml_random', { description: 'Takes the ml_random table from the results bundle', fn: ({ answer }) => answer.ml_random });
+  dash.loader('ml_lodo', { description: 'Takes the ml_lodo table from the results bundle', fn: ({ answer }) => answer.ml_lodo });
+</script>
+
+<script>
+  window.BX = (() => {
+    const ok = (id) => { const d = dash.data(id); return d.status === 'ok' ? d.data : null; };
+    const settle = (el, ...ids) => {
+      const ds = ids.map((id) => dash.data(id));
+      if (ds.every((d) => d.status !== 'loading')) el.classList.remove('dash-skeleton');
+      if (ds.some((d) => d.status === 'error')) { el.replaceChildren(); const p = document.createElement('p'); p.className = 'small muted'; p.textContent = 'Failed to load'; el.append(p); return null; }
+      if (!ds.every((d) => d.status === 'ok')) { el.textContent = '—'; return null; }
+      return ds.map((d) => d.data);
+    };
+    const cols = () => (dash.colors || []);
+    const tip = (el) => {
+      let t = el.querySelector(':scope > .bx-tip');
+      if (!t) { t = document.createElement('div'); t.className = 'bx-tip'; t.hidden = true; el.append(t); }
+      return {
+        show(ev, lines) {
+          t.replaceChildren();
+          lines.forEach((ln, i) => { const d = document.createElement('div'); if (i === 0) { const b = document.createElement('b'); b.textContent = ln; d.append(b); } else { d.className = 't2'; d.textContent = ln; } t.append(d); });
+          t.hidden = false;
+          const r = el.getBoundingClientRect();
+          const x = ev.clientX - r.left, y = ev.clientY - r.top;
+          const w = t.offsetWidth, h = t.offsetHeight;
+          t.style.left = Math.max(0, Math.min(x + 12, el.clientWidth - w)) + 'px';
+          t.style.top = (y - h - 10 < 0 ? y + 14 : y - h - 10) + 'px';
+        },
+        hide() { t.hidden = true; },
+      };
+    };
+    const svg = (el, w, h, label) => {
+      el.querySelectorAll(':scope > svg').forEach((s) => s.remove());
+      const s = d3.select(el).insert('svg', ':first-child').attr('width', w).attr('height', h).attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img').attr('aria-label', label);
+      return s;
+    };
+    const fmt = (v, digits = 3) => (v == null || v === '' || Number.isNaN(+v)) ? '—' : (Math.abs(+v) >= 1000 ? d3.format(',')(+v) : (+v === Math.round(+v) ? String(+v) : (+v).toFixed(digits)));
+    const pfmt = (v) => (v == null ? '—' : (+v < 0.001 ? (+v).toExponential(1) : (+v).toFixed(3)));
+    return { ok, settle, cols, tip, svg, fmt, pfmt };
+  })();
+  dash.onData(() => {
+    const c = dash.colors || [];
+    document.querySelectorAll('.bx').forEach((root) => { c.slice(0, 4).forEach((v, i) => root.style.setProperty(`--bx-c${i}`, v)); });
+  });
+
+  dash.draw('m', (el) => {
+    const rows = BX.ok('summary');
+    if (!rows) { el.textContent = '—'; return; }
+    const key = decodeURIComponent((el.dataset.where || '').split('=')[1] || '');
+    const r = rows.find((x) => x.metric === key);
+    el.textContent = r ? r.value : '—';
+  });
+
+  function fillTable(tbody, rows, spec) {
+    tbody.replaceChildren();
+    rows.forEach((r) => {
+      const tr = document.createElement('tr');
+      spec.forEach(([field, kind]) => {
+        const td = document.createElement('td');
+        if (kind === 'num') td.className = 'num';
+        const v = r[field];
+        td.textContent = kind === 'num' ? BX.fmt(v) : kind === 'p' ? BX.pfmt(v) : (v == null ? '—' : String(v));
+        if (kind === 'p') td.className = 'num';
+        tr.append(td);
+      });
+      tbody.append(tr);
+    });
+  }
+  dash.draw('studies', (tb) => { const r = BX.ok('studies'); if (!r) { tb.replaceChildren(); return; }
+    fillTable(tb, r, [['dataset'], ['GEO'], ['tissue'], ['data_type'], ['allergic', 'num'], ['healthy', 'num'], ['genes_tested', 'num'], ['up', 'num'], ['down', 'num']]); });
+  dash.draw('qc', (tb) => { const r = BX.ok('qc'); if (!r) { tb.replaceChildren(); return; }
+    fillTable(tb, r, [['dataset'], ['genes_before', 'num'], ['genes_after', 'num'], ['samples_before', 'num'], ['samples_after', 'num'], ['transform'], ['outliers_removed'], ['sex_check']]); });
+  dash.draw('validation', (tb) => { const r = BX.ok('validation'); if (!r) { tb.replaceChildren(); return; }
+    fillTable(tb, r, [['gene_set'], ['curated_genes', 'num'], ['in_signature', 'num'], ['FE_degmatched', 'num'], ['p_degmatched', 'p']]); });
+
+  window.BX.sigQuery = '';
+  document.querySelectorAll('#sig-search').forEach((inp) => inp.addEventListener('input', () => { window.BX.sigQuery = inp.value.trim().toUpperCase(); dash.draw('sigtable'); dash.draw('sigtable-note'); }));
+  const sigRows = () => { const r = BX.ok('signature'); if (!r) return null; const q = window.BX.sigQuery; return q ? r.filter((x) => x.gene.toUpperCase().includes(q)) : r; };
+  dash.draw('sigtable', (tb) => { const r = sigRows(); if (!r) { tb.replaceChildren(); return; }
+    fillTable(tb, r.slice(0, 20), [['gene'], ['direction'], ['Z', 'num'], ['FDR', 'p'], ['mean_log2FC', 'num'], ['n_sig_same_dir', 'num']]); });
+  dash.draw('sigtable-note', (el) => { const r = sigRows(); if (!r) { el.textContent = '—'; return; }
+    el.textContent = `${Math.min(20, r.length)} of ${r.length} matching genes shown, ranked by meta-analysis p (the table holds the top 300 of the signature).`; });
+</script>
+
+<script>
+  window.BX.vds = null;
+  dash.draw('volcano-select', (sel) => {
+    const r = BX.ok('studies');
+    sel.replaceChildren(...(r || []).map((x) => new Option(x.dataset, x.dataset)));
+    if (r && !window.BX.vds) window.BX.vds = r.find((x) => x.dataset.startsWith('Asthma bronchial'))?.dataset || r[0].dataset;
+    sel.value = window.BX.vds || '';
+    sel.onchange = () => { window.BX.vds = sel.value; dash.draw('volcano'); };
+  });
+  dash.draw('volcano', (el) => {
+    const got = BX.settle(el, 'volcano'); if (!got) return;
+    const ds = window.BX.vds; const rows = got[0].filter((r) => r.dataset === ds);
+    const C = BX.cols(); const W = Math.max(280, el.clientWidth), H = 340, m = { t: 10, r: 12, b: 38, l: 44 };
+    const s = BX.svg(el, W, H, `Volcano plot for ${ds}`);
+    const x = d3.scaleLinear().domain(d3.extent(rows, (d) => d.log2FC)).nice().range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([0, d3.max(rows, (d) => d.neglog10p) * 1.05]).nice().range([H - m.b, m.t]);
+    s.append('g').attr('class', 'grid').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - m.l - m.r)).tickFormat(''));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(3, Math.floor(W / 80))));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5));
+    s.append('text').attr('x', (m.l + W - m.r) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('log2 fold change (allergic − healthy)');
+    s.append('text').attr('transform', `translate(12,${(H - m.b + m.t) / 2}) rotate(-90)`).attr('text-anchor', 'middle').text('−log10 p');
+    [-0.5, 0.5].forEach((v) => s.append('line').attr('class', 'ref').attr('x1', x(v)).attr('x2', x(v)).attr('y1', m.t).attr('y2', H - m.b));
+    const colorOf = (st) => st === 'up' ? C[0] : st === 'down' ? C[1] : 'var(--cds-chart-muted)';
+    const ordered = rows.slice().sort((a, b) => (a.status === 'ns' ? -1 : 1) - (b.status === 'ns' ? -1 : 1));
+    s.append('g').selectAll('circle').data(ordered).join('circle')
+      .attr('cx', (d) => x(d.log2FC)).attr('cy', (d) => y(d.neglog10p)).attr('r', (d) => d.status === 'ns' ? 2 : 2.6)
+      .style('fill', (d) => colorOf(d.status)).style('opacity', (d) => d.status === 'ns' ? 0.45 : 0.85);
+    const top = rows.filter((r) => r.status !== 'ns').sort((a, b) => b.neglog10p - a.neglog10p).slice(0, 8);
+    s.append('g').selectAll('text').data(top).join('text').attr('class', 'lbl').attr('x', (d) => x(d.log2FC) + 4).attr('y', (d) => y(d.neglog10p) - 3).text((d) => d.gene);
+    const t = BX.tip(el); const pts = rows.map((d) => [x(d.log2FC), y(d.neglog10p), d]);
+    s.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+      .on('pointermove', (ev) => { const [px, py] = d3.pointer(ev); let best = null, bd = 400;
+        pts.forEach(([a, b, d]) => { const dd = (a - px) ** 2 + (b - py) ** 2; if (dd < bd) { bd = dd; best = d; } });
+        if (best) t.show(ev, [best.gene, `log2FC ${best.log2FC.toFixed(2)} · −log10 p ${best.neglog10p.toFixed(2)}`, best.status === 'ns' ? 'not significant' : `DEG, ${best.status} in allergy`]); else t.hide(); })
+      .on('pointerleave', () => t.hide());
+  });
+
+  function heat(el, rows, rowKey, colKey, rowsOrder, colsOrder, opts) {
+    const C = BX.cols(); const W = Math.max(280, el.clientWidth);
+    const s0 = BX.svg(el, W, 10, opts.label);
+    const tmp = s0.append('text').text(rowsOrder.reduce((a, b) => (a.length > b.length ? a : b), ''));
+    const lw = (tmp.node().getComputedTextLength() || 90) + 8; tmp.remove();
+    const top = opts.colLabelH || 70, cw = Math.max(16, (W - lw) / colsOrder.length), ch = opts.cellH || 18;
+    const H = top + ch * rowsOrder.length + 4;
+    s0.attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+    const max = d3.max(rows, (d) => Math.abs(d.log2FC)) || 1;
+    const op = d3.scaleSqrt().domain([0, opts.cap || max]).range([0.08, 1]).clamp(true);
+    const idx = new Map(rows.map((d) => [d[rowKey] + '|' + d[colKey], d]));
+    colsOrder.forEach((c, j) => s0.append('text').attr('transform', `translate(${lw + j * cw + cw / 2},${top - 6}) rotate(-40)`).text(c.length > 22 ? c.slice(0, 21) + '…' : c));
+    rowsOrder.forEach((r, i) => s0.append('text').attr('class', 'lbl').attr('x', lw - 6).attr('y', top + i * ch + ch / 2 + 4).attr('text-anchor', 'end').text(r));
+    const t = BX.tip(el);
+    rowsOrder.forEach((r, i) => colsOrder.forEach((c, j) => {
+      const d = idx.get(r + '|' + c); if (!d) return;
+      s0.append('rect').attr('x', lw + j * cw + 1).attr('y', top + i * ch + 1).attr('width', cw - 2).attr('height', ch - 2).attr('rx', 2)
+        .style('fill', d.log2FC >= 0 ? C[0] : C[1]).style('opacity', op(Math.abs(d.log2FC)))
+        .on('pointermove', (ev) => t.show(ev, [`${r} · ${c}`, `log2FC ${d.log2FC.toFixed(2)}${d.FDR != null ? ' · FDR ' + BX.pfmt(d.FDR) : ''}`]))
+        .on('pointerleave', () => t.hide());
+      if (opts.stars && d.FDR != null && d.FDR < 0.05) s0.append('text').attr('class', 'lbl').attr('x', lw + j * cw + cw / 2).attr('y', top + i * ch + ch / 2 + 4).attr('text-anchor', 'middle').style('pointer-events', 'none').text('*');
+    }));
+  }
+  dash.draw('posctrl', (el) => {
+    const got = BX.settle(el, 'posctrl', 'studies'); if (!got) return;
+    const [rows, st] = got; const genes = [...new Set(rows.map((d) => d.gene))];
+    heat(el, rows, 'dataset', 'gene', st.map((d) => d.dataset), genes, { label: 'Heatmap of positive-control gene fold changes', stars: true, cellH: 30, colLabelH: 50, cap: 4 });
+  });
+  dash.draw('sigheat', (el) => {
+    const got = BX.settle(el, 'sig_heatmap', 'studies'); if (!got) return;
+    const [rows, st] = got; const genes = [...new Map(rows.map((d) => [d.gene, d.rank])).entries()].sort((a, b) => a[1] - b[1]).map((d) => d[0]);
+    heat(el, rows, 'gene', 'dataset', genes, st.map((d) => d.dataset), { label: 'Heatmap of top consensus signature genes across contrasts', cellH: 13, colLabelH: 96, cap: 3 });
+  });
+</script>
+
+<script>
+  dash.draw('dumbbell', (el) => {
+    const got = BX.settle(el, 'enrichment'); if (!got) return;
+    const rows = got[0].slice().sort((a, b) => b.FE_degmatched - a.FE_degmatched);
+    const C = BX.cols(); const W = Math.max(280, el.clientWidth), rh = 13;
+    const s = BX.svg(el, W, 10, 'Fold enrichment per dietary bioactive, naive and degree-matched');
+    const tmp = s.append('text').text(rows.reduce((a, b) => (a.compound.length > b.compound.length ? a : b)).compound);
+    const lw = (tmp.node().getComputedTextLength() || 140) + 10; tmp.remove();
+    const m = { t: 8, r: 14, b: 34, l: lw }; const H = m.t + m.b + rh * rows.length;
+    s.attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+    const x = d3.scaleLinear().domain([0.3, d3.max(rows, (d) => Math.max(d.FE_naive, d.FE_degmatched)) * 1.05]).range([m.l, W - m.r]);
+    const y = (i) => m.t + i * rh + rh / 2;
+    s.append('g').attr('class', 'grid').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5).tickSize(-(H - m.t - m.b)).tickFormat(''));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5));
+    s.append('text').attr('x', (m.l + W - m.r) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('fold enrichment in the allergy signature (1 = chance)');
+    s.append('line').attr('x1', x(1)).attr('x2', x(1)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--color-fg)').style('stroke-width', 1);
+    const t = BX.tip(el);
+    rows.forEach((d, i) => {
+      const g = s.append('g');
+      g.append('text').attr('class', 'lbl').attr('x', m.l - 8).attr('y', y(i) + 4).attr('text-anchor', 'end').text(d.compound);
+      g.append('line').attr('x1', x(d.FE_naive)).attr('x2', x(d.FE_degmatched)).attr('y1', y(i)).attr('y2', y(i)).style('stroke', 'var(--cds-chart-grid)').style('stroke-width', 2);
+      g.append('circle').attr('cx', x(d.FE_naive)).attr('cy', y(i)).attr('r', 4).style('fill', 'var(--color-panel)').style('stroke', 'var(--color-fg-muted)').style('stroke-width', 1.4);
+      g.append('circle').attr('cx', x(d.FE_degmatched)).attr('cy', y(i)).attr('r', 4.5).style('fill', d.FDR_degmatched < 0.05 ? C[2] : 'var(--cds-chart-muted)');
+      g.append('rect').attr('x', 0).attr('y', y(i) - rh / 2).attr('width', W).attr('height', rh).style('fill', 'transparent')
+        .on('pointermove', (ev) => t.show(ev, [d.compound, `${d.class} · ${d.n_targets} targets, ${d.overlap} in signature`,
+          `naive ${d.FE_naive.toFixed(2)}× (FDR ${BX.pfmt(d.FDR_naive)})`, `degree-matched ${d.FE_degmatched.toFixed(2)}× (FDR ${BX.pfmt(d.FDR_degmatched)})`,
+          `beats ${Math.round(d.pct_rank_vs_other)}% of other CTD chemicals`]))
+        .on('pointerleave', () => t.hide());
+    });
+  });
+
+  dash.draw('degbins', (el) => {
+    const got = BX.settle(el, 'degbins'); if (!got) return;
+    const rows = got[0]; const C = BX.cols(); const W = Math.max(260, el.clientWidth), H = 190, m = { t: 18, r: 8, b: 34, l: 38 };
+    const s = BX.svg(el, W, H, 'Share of signature genes in each CTD degree decile');
+    const x = d3.scaleBand().domain(rows.map((d) => d.decile)).range([m.l, W - m.r]).padding(0.25);
+    const y = d3.scaleLinear().domain([0, d3.max(rows, (d) => d.signature_pct) * 1.15]).nice().range([H - m.b, m.t]);
+    s.append('g').attr('class', 'grid').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(-(W - m.l - m.r)).tickFormat(''));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickFormat((v) => v + '%'));
+    s.append('text').attr('x', (m.l + W - m.r) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('CTD degree decile (1 = least studied, 10 = most)');
+    const t = BX.tip(el);
+    s.append('g').selectAll('rect').data(rows).join('rect').attr('x', (d) => x(d.decile)).attr('width', x.bandwidth())
+      .attr('y', (d) => y(d.signature_pct)).attr('height', (d) => y(0) - y(d.signature_pct)).attr('rx', 2).style('fill', C[0])
+      .on('pointermove', (ev, d) => t.show(ev, [`Decile ${d.decile}: ${d.degree_range} chemicals per gene`, `${d.signature_genes} of ${d.genes} genes in signature (${d.signature_pct}%)`]))
+      .on('pointerleave', () => t.hide());
+    [rows[0], rows[rows.length - 1]].forEach((d) => s.append('text').attr('class', 'lbl').attr('x', x(d.decile) + x.bandwidth() / 2).attr('y', y(d.signature_pct) - 4).attr('text-anchor', 'middle').text(d.signature_pct + '%'));
+  });
+
+  dash.draw('chemicals', (el) => {
+    const got = BX.settle(el, 'chemicals'); if (!got) return;
+    const rows = got[0]; const C = BX.cols(); const W = Math.max(260, el.clientWidth), H = 240, m = { t: 10, r: 10, b: 36, l: 40 };
+    const s = BX.svg(el, W, H, 'Degree-adjusted enrichment of dietary bioactives and other CTD chemicals by target-set size');
+    const x = d3.scaleLog().domain(d3.extent(rows, (d) => d.n_targets)).nice().range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([-3, 2]).range([H - m.b, m.t]);
+    s.append('g').attr('class', 'grid').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - m.l - m.r)).tickFormat(''));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(4, '~s'));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5));
+    s.append('text').attr('x', (m.l + W - m.r) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('target genes in universe (log scale)');
+    s.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--color-fg)');
+    const oth = rows.filter((d) => d.group !== 'Dietary bioactive'), die = rows.filter((d) => d.group === 'Dietary bioactive');
+    s.append('g').selectAll('circle').data(oth).join('circle').attr('cx', (d) => x(d.n_targets)).attr('cy', (d) => y(Math.max(-3, d.log2FE))).attr('r', 2).style('fill', 'var(--cds-chart-muted)').style('opacity', 0.6);
+    const t = BX.tip(el);
+    s.append('g').selectAll('circle').data(die).join('circle').attr('cx', (d) => x(d.n_targets)).attr('cy', (d) => y(Math.max(-3, d.log2FE))).attr('r', 4.5)
+      .style('fill', C[2]).style('stroke', 'var(--color-panel)').style('stroke-width', 1.5)
+      .on('pointermove', (ev, d) => t.show(ev, [d.compound, `${d.n_targets} targets · log2 FE ${d.log2FE.toFixed(2)}`])).on('pointerleave', () => t.hide());
+  });
+
+  dash.draw('reversal', (el) => {
+    const got = BX.settle(el, 'reversal'); if (!got) return;
+    const rows = got[0].slice().sort((a, b) => b.reversal - a.reversal);
+    const C = BX.cols(); const W = Math.max(280, el.clientWidth), rh = 22;
+    const s = BX.svg(el, W, 10, 'Observed and expected reversal fraction per bioactive');
+    const tmp = s.append('text').text(rows.reduce((a, b) => (a.compound.length > b.compound.length ? a : b)).compound);
+    const lw = (tmp.node().getComputedTextLength() || 140) + 10; tmp.remove();
+    const m = { t: 6, r: 60, b: 34, l: lw }; const H = m.t + m.b + rh * rows.length;
+    s.attr('height', H).attr('viewBox', `0 0 ${W} ${H}`);
+    const x = d3.scaleLinear().domain([0, 1]).range([m.l, W - m.r]);
+    s.append('g').attr('class', 'grid').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5).tickSize(-(H - m.t - m.b)).tickFormat(''));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5, '%'));
+    s.append('text').attr('x', (m.l + W - m.r) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('share of directional signature targets moved against disease');
+    const t = BX.tip(el);
+    rows.forEach((d, i) => {
+      const yy = m.t + i * rh;
+      s.append('text').attr('class', 'lbl').attr('x', m.l - 8).attr('y', yy + rh / 2 + 4).attr('text-anchor', 'end').text(d.compound);
+      s.append('rect').attr('x', m.l).attr('y', yy + 4).attr('width', x(d.reversal) - m.l).attr('height', rh - 8).attr('rx', 2).style('fill', d.FDR < 0.05 ? C[2] : 'var(--cds-chart-muted)').style('opacity', d.FDR < 0.05 ? 1 : 0.9);
+      s.append('line').attr('x1', x(d.expected_reversal)).attr('x2', x(d.expected_reversal)).attr('y1', yy + 1).attr('y2', yy + rh - 1).style('stroke', 'var(--color-fg)').style('stroke-width', 2.5);
+      s.append('text').attr('x', x(d.reversal) + 6).attr('y', yy + rh / 2 + 4).text(`${d.n_reversed}/${d.n_dir_sig}`);
+      s.append('rect').attr('x', 0).attr('y', yy).attr('width', W).attr('height', rh).style('fill', 'transparent')
+        .on('pointermove', (ev) => t.show(ev, [d.compound, `${d.n_reversed} of ${d.n_dir_sig} reversed (${(100 * d.reversal).toFixed(1)}%)`, `expected ${(100 * d.expected_reversal).toFixed(1)}% · p ${BX.pfmt(d.p)} · FDR ${BX.pfmt(d.FDR)}`]))
+        .on('pointerleave', () => t.hide());
+    });
+    s.append('line').attr('class', 'ref').attr('x1', x(0.5)).attr('x2', x(0.5)).attr('y1', m.t).attr('y2', H - m.b);
+  });
+</script>
+
+<script>
+  window.BX.rset = 'Up in allergy';
+  dash.draw('reactome-select', (sel) => {
+    const r = BX.ok('reactome');
+    const sets = r ? [...new Set(r.map((d) => d.gene_set))] : [];
+    sel.replaceChildren(...sets.map((x) => new Option(x, x)));
+    sel.value = window.BX.rset;
+    sel.onchange = () => { window.BX.rset = sel.value; dash.draw('reactome'); };
+  });
+  dash.draw('reactome', (el) => {
+    const got = BX.settle(el, 'reactome'); if (!got) return;
+    const rows = got[0].filter((d) => d.gene_set === window.BX.rset).slice(0, 12);
+    const C = BX.cols(); const W = Math.max(280, el.clientWidth), rh = 26;
+    const m = { t: 6, r: 16, b: 34, l: Math.min(260, W * 0.52) }; const H = m.t + m.b + rh * rows.length;
+    const s = BX.svg(el, W, H, `Top Reactome pathways for ${window.BX.rset}`);
+    const v = (d) => -Math.log10(d.FDR);
+    const x = d3.scaleLinear().domain([0, Math.max(2, d3.max(rows, v) * 1.05)]).range([m.l, W - m.r]);
+    s.append('g').attr('class', 'grid').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(4).tickSize(-(H - m.t - m.b)).tickFormat(''));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(4));
+    s.append('text').attr('x', (m.l + W - m.r) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('−log10 FDR');
+    const colr = window.BX.rset.startsWith('Up') ? C[0] : window.BX.rset.startsWith('Down') ? C[1] : C[2];
+    const t = BX.tip(el);
+    rows.forEach((d, i) => {
+      const yy = m.t + i * rh;
+      const lab = s.append('text').attr('class', 'lbl').attr('x', m.l - 8).attr('y', yy + rh / 2 + 4).attr('text-anchor', 'end').text(d.pathway);
+      let txt = d.pathway; while (lab.node().getComputedTextLength() > m.l - 12 && txt.length > 8) { txt = txt.slice(0, -2); lab.text(txt + '…'); }
+      s.append('rect').attr('x', m.l).attr('y', yy + 4).attr('width', Math.max(1, x(v(d)) - m.l)).attr('height', rh - 8).attr('rx', 2).style('fill', colr);
+      s.append('rect').attr('x', 0).attr('y', yy).attr('width', W).attr('height', rh).style('fill', 'transparent')
+        .on('pointermove', (ev) => t.show(ev, [d.pathway, `${d.overlap} of ${d.size} genes · ${d.FE.toFixed(1)}× · FDR ${BX.pfmt(d.FDR)}`, d.genes]))
+        .on('pointerleave', () => t.hide());
+    });
+    s.append('line').attr('class', 'ref').attr('x1', x(-Math.log10(0.05))).attr('x2', x(-Math.log10(0.05))).attr('y1', m.t).attr('y2', H - m.b);
+  });
+
+  dash.draw('network', (el) => {
+    const got = BX.settle(el, 'net_nodes', 'net_edges'); if (!got) return;
+    const [nodes, edges] = got; const C = BX.cols();
+    const W = Math.max(280, el.clientWidth), H = Math.max(420, Math.min(620, W * 0.95)), pad = 34;
+    const s = BX.svg(el, W, H, 'Bipartite network of hub signature genes and dietary compounds');
+    const x = d3.scaleLinear().domain(d3.extent(nodes, (d) => d.x)).range([pad, W - pad]);
+    const y = d3.scaleLinear().domain(d3.extent(nodes, (d) => d.y)).range([pad, H - pad]);
+    const pos = new Map(nodes.map((d) => [d.id, [x(d.x), y(d.y)]]));
+    const ecol = (e) => e === 'reverses' ? C[2] : e === 'reinforces' ? C[3] : 'var(--cds-chart-grid)';
+    const el_ = s.append('g').selectAll('line').data(edges).join('line')
+      .attr('x1', (d) => pos.get(d.source)[0]).attr('y1', (d) => pos.get(d.source)[1]).attr('x2', (d) => pos.get(d.target)[0]).attr('y2', (d) => pos.get(d.target)[1])
+      .style('stroke', (d) => ecol(d.effect)).style('stroke-width', (d) => d.effect === 'none' ? 0.6 : 1).style('opacity', 0.7);
+    const t = BX.tip(el);
+    const r = d3.scaleSqrt().domain([1, d3.max(nodes.filter((d) => d.kind === 'gene'), (d) => d.degree)]).range([4, 13]);
+    const g = s.append('g').selectAll('g').data(nodes).join('g').attr('transform', (d) => `translate(${pos.get(d.id)})`);
+    g.filter((d) => d.kind === 'gene').append('circle').attr('r', (d) => r(d.degree)).style('fill', (d) => d.dir > 0 ? C[0] : C[1]).style('stroke', 'var(--color-panel)').style('stroke-width', 1.5);
+    g.filter((d) => d.kind !== 'gene').append('rect').attr('x', -5).attr('y', -5).attr('width', 10).attr('height', 10).attr('rx', 2).style('fill', 'var(--color-fg-muted)').style('stroke', 'var(--color-panel)').style('stroke-width', 1.5);
+    const big = W > 520;
+    g.filter((d) => d.kind === 'gene' ? (big || d.degree >= 12) : big).append('text').attr('class', 'lbl').attr('y', (d) => d.kind === 'gene' ? -r(d.degree) - 3 : -8).attr('text-anchor', 'middle')
+      .style('font-weight', (d) => d.kind === 'gene' ? 400 : 600).style('pointer-events', 'none').text((d) => d.kind === 'gene' ? d.label : d.label.split(' (')[0]);
+    g.style('cursor', 'pointer')
+      .on('pointermove', (ev, d) => {
+        const mine = edges.filter((e) => e.source === d.id || e.target === d.id);
+        const cnt = d3.rollup(mine, (v) => v.length, (e) => e.effect);
+        el_.style('opacity', (e) => (e.source === d.id || e.target === d.id) ? 1 : 0.08);
+        t.show(ev, [d.label, d.kind === 'gene' ? `${d.dir > 0 ? 'up' : 'down'} in allergy · targeted by ${d.degree} bioactives` : `dietary compound · ${mine.length} hub genes drawn`,
+          `reverses ${cnt.get('reverses') || 0} · reinforces ${cnt.get('reinforces') || 0} · no direction ${cnt.get('none') || 0}`]);
+      })
+      .on('pointerleave', () => { el_.style('opacity', 0.7); t.hide(); });
+  });
+
+  dash.draw('hubs', (el) => {
+    const got = BX.settle(el, 'hubs'); if (!got) return;
+    const rows = got[0].slice(0, 20); const C = BX.cols(); const W = Math.max(260, el.clientWidth), rh = 24;
+    const m = { t: 6, r: 30, b: 34, l: 104 }; const H = m.t + m.b + rh * rows.length;
+    const s = BX.svg(el, W, H, 'Number of compounds that reverse or reinforce each hub gene');
+    const x = d3.scaleLinear().domain([0, d3.max(rows, (d) => d.n_compounds)]).nice().range([m.l, W - m.r]);
+    s.append('g').attr('class', 'grid').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5).tickSize(-(H - m.t - m.b)).tickFormat(''));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5));
+    s.append('text').attr('x', (m.l + W - m.r) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('dietary compounds targeting the gene');
+    const t = BX.tip(el);
+    rows.forEach((d, i) => {
+      const yy = m.t + i * rh; let x0 = m.l;
+      s.append('text').attr('class', 'lbl').attr('x', m.l - 8).attr('y', yy + rh / 2 + 4).attr('text-anchor', 'end').text(`${d.gene} (${d.allergy_dir})`);
+      [['reverses', C[2]], ['reinforces', C[3]], ['none', 'var(--cds-chart-muted)']].forEach(([k, c]) => {
+        const w = x(d[k]) - x(0); if (w <= 0) return;
+        s.append('rect').attr('x', x0).attr('y', yy + 4).attr('width', Math.max(0, w - 2)).attr('height', rh - 8).attr('rx', 2).style('fill', c); x0 += w;
+      });
+      s.append('text').attr('x', x(d.n_compounds) + 4).attr('y', yy + rh / 2 + 4).text(d.n_compounds);
+      s.append('rect').attr('x', 0).attr('y', yy).attr('width', W).attr('height', rh).style('fill', 'transparent')
+        .on('pointermove', (ev) => t.show(ev, [`${d.gene} (${d.allergy_dir} in allergy)`, `${d.n_compounds} compounds: reverse ${d.reverses}, reinforce ${d.reinforces}, no direction ${d.none}`]))
+        .on('pointerleave', () => t.hide());
+    });
+  });
+
+  dash.draw('mlwithin', (el) => {
+    const got = BX.settle(el, 'ml_within', 'ml_random', 'studies'); if (!got) return;
+    const [rows, rnd, st] = got; const C = BX.cols();
+    const dsets = st.map((d) => d.dataset); const W = Math.max(280, el.clientWidth), rh = 40;
+    const m = { t: 6, r: 14, b: 34, l: Math.min(170, W * 0.38) }; const H = m.t + m.b + rh * dsets.length;
+    const s = BX.svg(el, W, H, 'Cross-validated AUROC per study and feature set');
+    const x = d3.scaleLinear().domain([0.6, 1.0]).range([m.l, W - m.r]).clamp(true);
+    s.append('g').attr('class', 'grid').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(4).tickSize(-(H - m.t - m.b)).tickFormat(''));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(4));
+    s.append('text').attr('x', (m.l + W - m.r) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('AUROC (axis starts at 0.6)');
+    const series = [['Bioactive hub targets', C[0], -9], ['Bioactive-targeted signature (LOO)', C[1], -3], ['All genes + in-fold top-100', C[2], 3], ['Bioactive hub targets – random forest', C[3], 9]];
+    const t = BX.tip(el);
+    dsets.forEach((ds, i) => {
+      const yy = m.t + i * rh + rh / 2;
+      const lab = s.append('text').attr('class', 'lbl').attr('x', m.l - 8).attr('y', yy + 4).attr('text-anchor', 'end').text(ds);
+      let txt = ds; while (lab.node().getComputedTextLength() > m.l - 12 && txt.length > 6) { txt = txt.slice(0, -2); lab.text(txt + '…'); }
+      const rv = rnd.filter((d) => d.dataset === ds && d.featureset === 'Bioactive hub targets').map((d) => d.AUROC);
+      if (rv.length) s.append('rect').attr('x', x(d3.min(rv))).attr('y', yy - 13).attr('width', Math.max(3, x(d3.max(rv)) - x(d3.min(rv)))).attr('height', 26).attr('rx', 3).style('fill', 'var(--cds-chart-muted)').style('opacity', 0.45);
+      series.forEach(([fs, c, dy]) => {
+        const r = rows.find((d) => d.dataset === ds && d.features === fs); if (!r) return;
+        s.append('circle').attr('cx', x(r.AUROC)).attr('cy', yy + dy).attr('r', 4.5).style('fill', c).style('stroke', 'var(--color-panel)').style('stroke-width', 1.5);
+      });
+      s.append('rect').attr('x', 0).attr('y', yy - rh / 2).attr('width', W).attr('height', rh).style('fill', 'transparent')
+        .on('pointermove', (ev) => {
+          const g = (fs) => rows.find((d) => d.dataset === ds && d.features === fs);
+          const hub = g('Bioactive hub targets');
+          t.show(ev, [ds, `hub targets ${hub.AUROC.toFixed(3)} (beats ${Math.round(hub.pct_beats_random)}% of random sets, permutation p ${BX.pfmt(hub.perm_p)})`,
+            `random sets ${d3.min(rv).toFixed(3)}–${d3.max(rv).toFixed(3)}`, `signature (LOO) ${g('Bioactive-targeted signature (LOO)').AUROC.toFixed(3)} · all genes ${g('All genes + in-fold top-100').AUROC.toFixed(3)} · RF ${g('Bioactive hub targets – random forest').AUROC.toFixed(3)}`]);
+        })
+        .on('pointerleave', () => t.hide());
+    });
+  });
+
+  dash.draw('lodo', (el) => {
+    const got = BX.settle(el, 'ml_lodo'); if (!got) return;
+    const rows = got[0].filter((d) => d.dataset !== 'mean'); const C = BX.cols();
+    const W = Math.max(280, el.clientWidth), rh = 40;
+    const m = { t: 6, r: 14, b: 34, l: Math.min(170, W * 0.38) }; const H = m.t + m.b + rh * rows.length;
+    const s = BX.svg(el, W, H, 'Held-out AUROC for each left-out study');
+    const x = d3.scaleLinear().domain([0, 1]).range([m.l, W - m.r]);
+    s.append('g').attr('class', 'grid').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5).tickSize(-(H - m.t - m.b)).tickFormat(''));
+    s.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5));
+    s.append('text').attr('x', (m.l + W - m.r) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('AUROC on the held-out study (0.5 = chance)');
+    const ser = [['lr_hub', C[0]], ['lr_random_mean', 'var(--cds-chart-muted)'], ['sig_score', C[1]]]; const bh = (rh - 10) / ser.length;
+    const t = BX.tip(el);
+    rows.forEach((d, i) => {
+      const yy = m.t + i * rh;
+      const lab = s.append('text').attr('class', 'lbl').attr('x', m.l - 8).attr('y', yy + rh / 2 + 4).attr('text-anchor', 'end').text(d.dataset);
+      let txt = d.dataset; while (lab.node().getComputedTextLength() > m.l - 12 && txt.length > 6) { txt = txt.slice(0, -2); lab.text(txt + '…'); }
+      ser.forEach(([k, c], j) => s.append('rect').attr('x', m.l).attr('y', yy + 5 + j * bh).attr('width', Math.max(1, x(d[k]) - m.l)).attr('height', bh - 2).attr('rx', 2).style('fill', c));
+      s.append('rect').attr('x', 0).attr('y', yy).attr('width', W).attr('height', rh).style('fill', 'transparent')
+        .on('pointermove', (ev) => t.show(ev, [`Held out: ${d.dataset}`, `LR on hub targets ${d.lr_hub.toFixed(3)}`, `LR on random genes ${d.lr_random_mean.toFixed(3)} ± ${d.lr_random_sd.toFixed(3)}`, `signature score ${d.sig_score.toFixed(3)}`]))
+        .on('pointerleave', () => t.hide());
+    });
+    s.append('line').attr('class', 'ref').attr('x1', x(0.5)).attr('x2', x(0.5)).attr('y1', m.t).attr('y2', H - m.b);
+  });
+</script>
