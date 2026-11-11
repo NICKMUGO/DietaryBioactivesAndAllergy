@@ -425,3 +425,53 @@ for name, d in datasets.items():
 
 qc_table = pd.DataFrame(qc_log)
 qc_table
+
+# %% [markdown]
+# ### QC check: reported sex vs sex-chromosome gene expression
+# *XIST* is expressed only from the inactive X in females; *RPS4Y1* and *DDX3Y* are on the
+# Y chromosome and expressed only in males. A sample whose expression contradicts its recorded sex is a
+# likely sample swap or annotation error.
+
+# %%
+def infer_sex(x):
+    y = x.loc[[g for g in ["RPS4Y1", "DDX3Y", "KDM5D", "EIF1AY"] if g in x.index]].mean()
+    score = y - x.loc["XIST"]
+    srt = np.sort(score.values)
+    cut = srt[np.argmax(np.diff(srt))] + np.max(np.diff(srt)) / 2
+    return pd.Series(np.where(score > cut, "M", "F"), index=x.columns), y
+
+sex_rows = []
+fig, axes = plt.subplots(1, 4, figsize=(13, 3.0))
+for ax, name in zip(axes, ["AR/asthma nasal (child)", "Asthma nasal", "Asthma bronchial",
+                           "CRSwNP polyp (RNA-seq)"]):
+    d = datasets[name]; x = d["expr"]
+    pred, ys = infer_sex(x)
+    xs = x.loc["XIST"] if "XIST" in x.index else pd.Series(np.arange(x.shape[1]), index=x.columns)
+    sexcol = next((c for c in ["gender", "sex"] if c in d["meta"].columns), None)
+    rep = d["meta"][sexcol].str[0].str.upper() if sexcol else pd.Series("?", index=x.columns)
+    has_rep = rep.isin(["M", "F"])
+    gap = ys[rep == "M"].mean() - ys[rep == "F"].mean() if has_rep.any() else np.nan
+    sex_signal = not (has_rep.any() and gap < 1)
+    mismatch = [s for s in x.columns if sex_signal and rep[s] in ("M", "F") and rep[s] != pred[s]]
+    for sx, colr, lab in [("F", C_VIOLET, "reported female"), ("M", C_AQUA, "reported male"),
+                          ("?", C_MUTED, "not reported")]:
+        sel = (rep == sx).values
+        if sel.any():
+            ax.scatter(xs[sel], ys[sel], s=22, c=colr, label=lab, edgecolor="white", lw=0.6)
+    if mismatch:
+        ax.scatter(xs[mismatch], ys[mismatch], s=80, facecolor="none", edgecolor=C_DIS, lw=1.5,
+                   label="mismatch")
+    ax.set(title=name + ("" if sex_signal else "\nNO sex signal: values appear sex-adjusted"),
+           xlabel="XIST (log2)" if "XIST" in x.index else "sample (XIST not on array)",
+           ylabel="Y genes RPS4Y1/DDX3Y/KDM5D (log2)")
+    ax.legend(fontsize=7, loc="best")
+    sex_rows.append({"dataset": name, "samples with reported sex": int((rep != "?").sum()),
+                     "Y-gene gap M−F (log2)": None if np.isnan(gap) else round(float(gap), 2),
+                     "inferred F": int((pred == "F").sum()) if sex_signal else None,
+                     "inferred M": int((pred == "M").sum()) if sex_signal else None,
+                     "mismatches": len(mismatch) if sex_signal else "not testable",
+                     "mismatched samples": ", ".join(mismatch) or "–"})
+fig.suptitle("Sex check: expected two clean clusters (female: high XIST, no Y-gene expression)", y=1.08)
+savefig(fig, "qc_sex_check")
+sex_table = pd.DataFrame(sex_rows)
+sex_table
